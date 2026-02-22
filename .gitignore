@@ -1,0 +1,30 @@
+# Credentials
+.env
+**/.kubeconfig
+
+# Terragrunt
+.terragrunt-cache/
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+*.backup
+crash.log
+
+# Editors / IDEs
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+*~
+*.bak
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude
+**/.claude/**
