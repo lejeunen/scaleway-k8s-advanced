@@ -4,6 +4,8 @@ resources:
   - ../base/cert-manager
   - ../base/cert-manager-scaleway-webhook
   - ../base/envoy-gateway
+  - ../base/external-secrets
 patches:
   - path: cert-manager-patch.yaml
   - path: envoy-gateway-patch.yaml
+  - path: external-secrets-patch.yaml

@@ -11,3 +11,7 @@ spec:
   path: ./gitops/platform/dev
   prune: true
   wait: true
+  postBuild:
+    substitute:
+      SCW_PROJECT_ID: "25485e2e-7a3a-40ae-8d0c-1496ef7c5e0f"
+      SCW_REGION: "fr-par"
