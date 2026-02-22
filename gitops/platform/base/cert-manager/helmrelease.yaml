@@ -23,5 +23,8 @@ spec:
       retries: 3
       strategy: rollback
   values:
+    crds:
+      enabled: true
+      keep: true
     config:
       enableGatewayAPI: true
