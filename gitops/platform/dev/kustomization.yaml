@@ -5,33 +5,5 @@ resources:
   - ../base/cert-manager-scaleway-webhook
   - ../base/envoy-gateway
 patches:
-  - target:
-      kind: ClusterIssuer
-      name: letsencrypt-staging
-    patch: |
-      - op: replace
-        path: /spec/acme/email
-        value: lejeune.n@gmail.com
-  - target:
-      kind: Gateway
-      name: eg
-    patch: |
-      - op: add
-        path: /metadata/annotations
-        value:
-          cert-manager.io/cluster-issuer: letsencrypt-staging
-      - op: add
-        path: /spec/listeners/-
-        value:
-          name: https
-          protocol: HTTPS
-          port: 443
-          hostname: "*.scw.sovereigncloudwisdom.eu"
-          allowedRoutes:
-            namespaces:
-              from: All
-          tls:
-            mode: Terminate
-            certificateRefs:
-              - kind: Secret
-                name: scw-wildcard-tls
+  - path: cert-manager-patch.yaml
+  - path: envoy-gateway-patch.yaml
