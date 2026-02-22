@@ -23,15 +23,19 @@ dependency "vpc" {
 }
 
 inputs = {
-  cluster_name       = local.env.locals.k8s_cluster_name
-  k8s_version        = local.env.locals.k8s_version
-  cni                = local.env.locals.k8s_cni
-  private_network_id = dependency.vpc.outputs.private_network_id
-  region             = local.env.locals.region
-  node_type          = local.env.locals.k8s_node_type
-  pool_size          = local.env.locals.k8s_pool_size
-  pool_min_size      = local.env.locals.k8s_pool_min_size
-  pool_max_size      = local.env.locals.k8s_pool_max_size
-  pool_autoscaling   = local.env.locals.k8s_pool_autoscale
-  tags               = local.env.locals.tags
+  cluster_name                = local.env.locals.k8s_cluster_name
+  k8s_version                 = local.env.locals.k8s_version
+  cni                         = local.env.locals.k8s_cni
+  private_network_id          = dependency.vpc.outputs.private_network_id
+  region                      = local.env.locals.region
+  node_type                   = local.env.locals.k8s_node_type
+  pool_size                   = local.env.locals.k8s_pool_size
+  pool_min_size               = local.env.locals.k8s_pool_min_size
+  pool_max_size               = local.env.locals.k8s_pool_max_size
+  pool_autoscaling            = local.env.locals.k8s_pool_autoscale
+  delete_additional_resources = local.env.locals.k8s_delete_additional_resources
+  auto_upgrade_enabled        = local.env.locals.k8s_auto_upgrade
+  auto_upgrade_hour           = local.env.locals.k8s_auto_upgrade_hour
+  auto_upgrade_day            = local.env.locals.k8s_auto_upgrade_day
+  tags                        = local.env.locals.tags
 }

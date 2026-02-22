@@ -59,6 +59,9 @@ This project favors learning-by-doing: each commit is self-contained and tells a
 Terragrunt-managed infrastructure to get a production-ready Kapsule cluster:
 - VPC with private network
 - Kapsule cluster with autoscaling node pool
+- Automatic K8s version upgrades (Sunday 3am maintenance window)
+- PodSecurity enforcement via namespace labels (Kapsule enables the [PodSecurity admission controller](https://kubernetes.io/docs/concepts/security/pod-security-admission/) by default)
+- Environment-aware safety: `delete_additional_resources` protects production from accidental resource deletion
 
 ### Phase 2 — GitOps 🔧
 FluxCD bootstrap to manage all subsequent components declaratively:

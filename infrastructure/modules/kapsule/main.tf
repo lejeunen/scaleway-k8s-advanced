@@ -6,22 +6,22 @@ resource "scaleway_k8s_cluster" "this" {
   private_network_id = var.private_network_id
   tags               = var.tags
 
-  delete_additional_resources = true
+  delete_additional_resources = var.delete_additional_resources
 
   auto_upgrade {
-    enable                        = false
-    maintenance_window_start_hour = 0
-    maintenance_window_day        = "any"
+    enable                        = var.auto_upgrade_enabled
+    maintenance_window_start_hour = var.auto_upgrade_hour
+    maintenance_window_day        = var.auto_upgrade_day
   }
 
   autoscaler_config {
-    disable_scale_down           = false
-    scale_down_delay_after_add   = "5m"
-    scale_down_unneeded_time     = "5m"
-    estimator                    = "binpacking"
-    expander                     = "random"
+    disable_scale_down            = false
+    scale_down_delay_after_add    = "5m"
+    scale_down_unneeded_time      = "5m"
+    estimator                     = "binpacking"
+    expander                      = "random"
     ignore_daemonsets_utilization = true
-    balance_similar_node_groups  = true
+    balance_similar_node_groups   = true
   }
 }
 

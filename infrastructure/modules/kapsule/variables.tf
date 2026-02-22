@@ -58,3 +58,27 @@ variable "pool_autoscaling" {
   type        = bool
   default     = true
 }
+
+variable "delete_additional_resources" {
+  description = "Delete LBs, volumes, etc. on cluster destroy. Safe for dev, dangerous for prod."
+  type        = bool
+  default     = false
+}
+
+variable "auto_upgrade_enabled" {
+  description = "Enable automatic K8s patch version upgrades"
+  type        = bool
+  default     = true
+}
+
+variable "auto_upgrade_hour" {
+  description = "Hour (UTC) for the maintenance window"
+  type        = number
+  default     = 3
+}
+
+variable "auto_upgrade_day" {
+  description = "Day for the maintenance window"
+  type        = string
+  default     = "sunday"
+}
