@@ -71,13 +71,30 @@ Terragrunt-managed infrastructure to get a production-ready Kapsule cluster:
 ### Phase 2 — GitOps 🔧
 FluxCD bootstrap to manage all subsequent components declaratively:
 - [x] Gateway API with Envoy Gateway (traffic routing, canary deployments)
-- [x] TLS automation (cert-manager with Let's Encrypt)
+- [x] TLS automation (cert-manager with Let's Encrypt DNS-01 wildcard)
 - [x] Secret management (External Secrets Operator + Scaleway Secret Manager)
-- [ ] Observability stack (Prometheus, Grafana, Loki, Tempo)
+- [ ] CloudNativePG operator (in-cluster PostgreSQL, CNCF)
+- [ ] Observability stack
+  - [ ] Prometheus (metrics collection + alerting rules)
+  - [ ] Grafana (dashboards)
+  - [ ] Loki (log aggregation)
+  - [ ] Tempo (distributed tracing)
+  - [ ] OpenTelemetry Collector (unified telemetry pipeline)
 
 ### Phase 3 — Crossplane 📋
 Cloud resources as Kubernetes custom resources:
-- [ ] Managed databases
-- [ ] Container registry
-- [ ] Secret Manager
-- [ ] Full lifecycle management through the K8s control plane
+- [ ] Crossplane with Scaleway provider
+- [ ] Container Registry (sovereign image storage)
+- [ ] S3 bucket (CloudNativePG backups)
+
+### Phase 4 — Application 🚀
+Deploy [sovereign-cloud-wisdom](https://github.com/lejeunen/sovereign-cloud-wisdom) as a real workload:
+- [ ] Dedicated Helm chart (in the app repo, simple and app-specific)
+- [ ] CloudNativePG Cluster instance (app database, S3 backups via Crossplane bucket)
+- [ ] ExternalSecrets for DB credentials and API auth token
+- [ ] HTTPRoute on `wisdom.scw.sovereigncloudwisdom.eu`
+- [ ] Flux image automation (auto-deploy on new image tags)
+
+### Phase 5 — CI/CD 📋
+- [ ] GitHub Actions pipeline (build, test, push image on commit)
+- [ ] OIDC federation with Scaleway (no stored credentials)
