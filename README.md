@@ -43,10 +43,11 @@ This project favors learning-by-doing: each commit is self-contained and tells a
 
 - **Crossplane over pure Terraform** — Once the cluster exists, managing cloud resources as K8s custom resources keeps everything in a single control plane and reconciliation loop. No more split between "infra deploy" and "app deploy".
 - **FluxCD over ArgoCD** — Flux follows a decentralized, pull-based model that fits well with a mono-repo layout. It's lighter-weight and doesn't require a UI or additional RBAC setup.
-- **Terragrunt for bootstrap only** — Terraform/Terragrunt is the right tool for the initial chicken-and-egg problem (creating the cluster that will host everything else). After that, Crossplane takes over.
+- **Terragrunt for bootstrap only** — Terraform/Terragrunt is the right tool for the initial chicken-and-egg problem (creating the cluster, seeding Secret Manager with credentials). After that, Crossplane takes over.
 - **Gateway API over Ingress** — The Kubernetes [Gateway API](https://gateway-api.sigs.k8s.io/) is the successor to the Ingress resource, offering weighted traffic splitting (canary deployments), header-based routing, and cross-namespace references. Since `ingress-nginx` reaches [end-of-life in March 2026](https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/), we use Gateway API from the start.
 - **Envoy Gateway as Gateway API implementation** — Kapsule's managed Cilium supports Gateway API upstream, but Scaleway does not expose the `gatewayAPI.enabled` flag on managed clusters (as of Feb 2026). Since the Cilium installation in `kube-system` is managed by Scaleway and may be overwritten during auto-upgrades, we deploy [Envoy Gateway](https://gateway.envoyproxy.io/) (the CNCF reference implementation) as a standalone controller. All routing manifests use the portable Gateway API spec — if Scaleway enables Cilium Gateway API in the future, the implementation can be swapped with zero changes to route definitions.
-- **External Secrets over sealed-secrets** — ESO integrates with Scaleway's Secret Manager, keeping secrets out of git entirely rather than encrypting them in-repo.
+- **External Secrets over sealed-secrets** — ESO integrates with Scaleway's Secret Manager, keeping secrets out of git entirely rather than encrypting them in-repo. Terragrunt seeds the initial secrets; ESO syncs them into the cluster.
+- **Three-phase Flux reconciliation** — Operators (platform) → CRD instances like ClusterIssuer and ClusterSecretStore (platform-config) → workloads (apps). This split avoids the Kustomize dry-run failure when CRDs don't exist yet on first deploy.
 
 ## Prerequisites
 
@@ -65,12 +66,13 @@ Terragrunt-managed infrastructure to get a production-ready Kapsule cluster:
 - [x] Automatic K8s version upgrades (Sunday 3am maintenance window)
 - [x] PodSecurity enforcement via namespace labels (Kapsule enables the [PodSecurity admission controller](https://kubernetes.io/docs/concepts/security/pod-security-admission/) by default)
 - [x] Environment-aware safety: `delete_additional_resources` protects production from accidental resource deletion
+- [x] Secret Manager bootstrapping (Terragrunt seeds credentials consumed by ESO)
 
 ### Phase 2 — GitOps 🔧
 FluxCD bootstrap to manage all subsequent components declaratively:
 - [x] Gateway API with Envoy Gateway (traffic routing, canary deployments)
 - [x] TLS automation (cert-manager with Let's Encrypt)
-- [ ] Secret management (External Secrets Operator)
+- [x] Secret management (External Secrets Operator + Scaleway Secret Manager)
 - [ ] Observability stack (Prometheus, Grafana, Loki, Tempo)
 
 ### Phase 3 — Crossplane 📋
