@@ -15,25 +15,26 @@ This project demonstrates that a production-grade Kubernetes platform can be bui
 Bootstrap a Kapsule cluster with Terraform/Terragrunt, then manage everything else — cloud resources included — through GitOps (FluxCD) and Crossplane. This design maximizes multi-cloud portability by expressing infrastructure as Kubernetes resources rather than provider-specific IaC.
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    GitOps (FluxCD)                       │
-│         Declarative, git-driven reconciliation          │
-│                                                         │
-│  ┌──────────────┐  ┌─────────────┐  ┌───────────────┐  │
-│  │   Platform    │  │ Observability│  │  Crossplane   │  │
-│  │  Components   │  │    Stack    │  │   Providers   │  │
-│  │              │  │             │  │               │  │
-│  │ NGINX Ingress│  │ Prometheus  │  │ RDB Instances │  │
-│  │ cert-manager │  │ Grafana     │  │ Registry      │  │
-│  │ External     │  │ Loki        │  │ Secret Manager│  │
-│  │  Secrets     │  │             │  │               │  │
-│  └──────────────┘  └─────────────┘  └───────────────┘  │
-├─────────────────────────────────────────────────────────┤
-│              Kapsule (Managed Kubernetes)                │
-│              VPC + Private Network                      │
-├─────────────────────────────────────────────────────────┤
-│           Terragrunt / Terraform (bootstrap)            │
-└─────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────┐
+│                     GitOps (FluxCD)                        │
+│          Declarative, git-driven reconciliation            │
+│                                                            │
+│  ┌────────────────┐  ┌───────────────┐  ┌──────────────┐  │
+│  │    Platform     │  │ Observability  │  │  Crossplane  │  │
+│  │   Components    │  │     Stack      │  │  Providers   │  │
+│  │                 │  │                │  │              │  │
+│  │ Envoy Gateway   │  │ Prometheus     │  │ RDB Instance │  │
+│  │   (Gateway API) │  │ Grafana        │  │ Registry     │  │
+│  │ cert-manager    │  │ Loki           │  │ Secret Mgr   │  │
+│  │ External        │  │ Tempo          │  │              │  │
+│  │   Secrets       │  │                │  │              │  │
+│  └────────────────┘  └───────────────┘  └──────────────┘  │
+├───────────────────────────────────────────────────────────┤
+│               Kapsule (Managed Kubernetes)                 │
+│               VPC + Private Network                        │
+├───────────────────────────────────────────────────────────┤
+│            Terragrunt / Terraform (bootstrap)              │
+└───────────────────────────────────────────────────────────┘
 ```
 
 This project favors learning-by-doing: each commit is self-contained and tells a story. Browse the [commit history](https://github.com/lejeunen/scaleway-k8s-advanced/commits/main) for step-by-step implementation details.
@@ -43,6 +44,8 @@ This project favors learning-by-doing: each commit is self-contained and tells a
 - **Crossplane over pure Terraform** — Once the cluster exists, managing cloud resources as K8s custom resources keeps everything in a single control plane and reconciliation loop. No more split between "infra deploy" and "app deploy".
 - **FluxCD over ArgoCD** — Flux follows a decentralized, pull-based model that fits well with a mono-repo layout. It's lighter-weight and doesn't require a UI or additional RBAC setup.
 - **Terragrunt for bootstrap only** — Terraform/Terragrunt is the right tool for the initial chicken-and-egg problem (creating the cluster that will host everything else). After that, Crossplane takes over.
+- **Gateway API over Ingress** — The Kubernetes [Gateway API](https://gateway-api.sigs.k8s.io/) is the successor to the Ingress resource, offering weighted traffic splitting (canary deployments), header-based routing, and cross-namespace references. Since `ingress-nginx` reaches [end-of-life in March 2026](https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/), we use Gateway API from the start.
+- **Envoy Gateway as Gateway API implementation** — Kapsule's managed Cilium supports Gateway API upstream, but Scaleway does not expose the `gatewayAPI.enabled` flag on managed clusters (as of Feb 2026). Since the Cilium installation in `kube-system` is managed by Scaleway and may be overwritten during auto-upgrades, we deploy [Envoy Gateway](https://gateway.envoyproxy.io/) (the CNCF reference implementation) as a standalone controller. All routing manifests use the portable Gateway API spec — if Scaleway enables Cilium Gateway API in the future, the implementation can be swapped with zero changes to route definitions.
 - **External Secrets over sealed-secrets** — ESO integrates with Scaleway's Secret Manager, keeping secrets out of git entirely rather than encrypting them in-repo.
 
 ## Prerequisites
@@ -65,10 +68,10 @@ Terragrunt-managed infrastructure to get a production-ready Kapsule cluster:
 
 ### Phase 2 — GitOps 🔧
 FluxCD bootstrap to manage all subsequent components declaratively:
-- Ingress controller (NGINX)
-- TLS automation (cert-manager)
+- Gateway API with Envoy Gateway (traffic routing, canary deployments)
+- TLS automation (cert-manager with Let's Encrypt)
 - Secret management (External Secrets Operator)
-- Observability stack
+- Observability stack (Prometheus, Grafana, Loki, Tempo)
 
 ### Phase 3 — Crossplane 📋
 Cloud resources as Kubernetes custom resources:
