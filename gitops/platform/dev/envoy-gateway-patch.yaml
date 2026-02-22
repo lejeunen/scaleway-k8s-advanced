@@ -4,7 +4,7 @@ metadata:
   name: eg
   namespace: envoy-gateway-system
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-staging
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   listeners:
     - name: https
