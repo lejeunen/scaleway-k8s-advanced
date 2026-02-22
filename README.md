@@ -60,22 +60,22 @@ This project favors learning-by-doing: each commit is self-contained and tells a
 
 ### Phase 1 — Foundation ✅
 Terragrunt-managed infrastructure to get a production-ready Kapsule cluster:
-- VPC with private network
-- Kapsule cluster with autoscaling node pool
-- Automatic K8s version upgrades (Sunday 3am maintenance window)
-- PodSecurity enforcement via namespace labels (Kapsule enables the [PodSecurity admission controller](https://kubernetes.io/docs/concepts/security/pod-security-admission/) by default)
-- Environment-aware safety: `delete_additional_resources` protects production from accidental resource deletion
+- [x] VPC with private network
+- [x] Kapsule cluster with autoscaling node pool
+- [x] Automatic K8s version upgrades (Sunday 3am maintenance window)
+- [x] PodSecurity enforcement via namespace labels (Kapsule enables the [PodSecurity admission controller](https://kubernetes.io/docs/concepts/security/pod-security-admission/) by default)
+- [x] Environment-aware safety: `delete_additional_resources` protects production from accidental resource deletion
 
 ### Phase 2 — GitOps 🔧
 FluxCD bootstrap to manage all subsequent components declaratively:
-- Gateway API with Envoy Gateway (traffic routing, canary deployments)
-- TLS automation (cert-manager with Let's Encrypt)
-- Secret management (External Secrets Operator)
-- Observability stack (Prometheus, Grafana, Loki, Tempo)
+- [x] Gateway API with Envoy Gateway (traffic routing, canary deployments)
+- [x] TLS automation (cert-manager with Let's Encrypt)
+- [ ] Secret management (External Secrets Operator)
+- [ ] Observability stack (Prometheus, Grafana, Loki, Tempo)
 
 ### Phase 3 — Crossplane 📋
 Cloud resources as Kubernetes custom resources:
-- Managed databases
-- Container registry
-- Secret Manager
-- Full lifecycle management through the K8s control plane
+- [ ] Managed databases
+- [ ] Container registry
+- [ ] Secret Manager
+- [ ] Full lifecycle management through the K8s control plane
