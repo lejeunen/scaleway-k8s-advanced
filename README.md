@@ -95,6 +95,7 @@ Deploy [sovereign-cloud-wisdom](https://github.com/lejeunen/sovereign-cloud-wisd
 - [ ] CloudNativePG Cluster instance (app database, S3 backups via Crossplane bucket)
 - [ ] ExternalSecrets for DB credentials and API auth token
 - [ ] HTTPRoute on `wisdom.scw.sovereigncloudwisdom.eu`
+- [ ] Grafana HTTPRoute on `grafana.scw.sovereigncloudwisdom.eu` (admin password moved to Secret Manager via ESO)
 - [ ] Flux image automation (auto-deploy on new image tags)
 
 ### Phase 5 — CI/CD 📋
