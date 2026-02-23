@@ -23,12 +23,12 @@ Bootstrap a Kapsule cluster with Terraform/Terragrunt, then manage everything el
 │  │    Platform    │  │ Observability │  │  Crossplane  │  │
 │  │   Components   │  │     Stack     │  │  Providers   │  │
 │  │                │  │               │  │              │  │
-│  │ Envoy Gateway  │  │ Prometheus    │  │ RDB Instance │  │
-│  │  (Gateway API) │  │ Grafana       │  │ Registry     │  │
-│  │ cert-manager   │  │ Loki          │  │ Secret Mgr   │  │
+│  │ Envoy Gateway  │  │ Prometheus    │  │ S3 Bucket    │  │
+│  │  (Gateway API) │  │ Grafana       │  │ Container    │  │
+│  │ cert-manager   │  │ Loki          │  │  Registry    │  │
 │  │ External       │  │ Tempo         │  │              │  │
-│  │   Secrets      │  │               │  │              │  │
-│  │ CloudNativePG  │  │               │  │              │  │
+│  │   Secrets      │  │ Alloy         │  │ (Scaleway    │  │
+│  │ CloudNativePG  │  │               │  │  Provider)   │  │
 │  └────────────────┘  └───────────────┘  └──────────────┘  │
 ├───────────────────────────────────────────────────────────┤
 │               Kapsule (Managed Kubernetes)                │
@@ -49,7 +49,8 @@ This project favors learning-by-doing: each commit is self-contained and tells a
 - **Envoy Gateway as Gateway API implementation** — Kapsule's managed Cilium supports Gateway API upstream, but Scaleway does not expose the `gatewayAPI.enabled` flag on managed clusters (as of Feb 2026). Since the Cilium installation in `kube-system` is managed by Scaleway and may be overwritten during auto-upgrades, we deploy [Envoy Gateway](https://gateway.envoyproxy.io/) (the CNCF reference implementation) as a standalone controller. All routing manifests use the portable Gateway API spec — if Scaleway enables Cilium Gateway API in the future, the implementation can be swapped with zero changes to route definitions.
 - **External Secrets over sealed-secrets** — ESO integrates with Scaleway's Secret Manager, keeping secrets out of git entirely rather than encrypting them in-repo. Terragrunt seeds the initial secrets; ESO syncs them into the cluster.
 - **Grafana Alloy over Promtail** — Alloy is Grafana's unified telemetry collector (successor to Promtail and Grafana Agent). A single DaemonSet collects logs today and will also collect traces when Tempo is added, eliminating the need for a separate OpenTelemetry Collector. Pragmatic choice: best integration with the Grafana stack (Loki, Tempo, Prometheus) while remaining open-source.
-- **Three-phase Flux reconciliation** — Operators (platform) → CRD instances like ClusterIssuer and ClusterSecretStore (platform-config) → workloads (apps). This split avoids the Kustomize dry-run failure when CRDs don't exist yet on first deploy.
+- **Crossplane provider auto-install** — The Scaleway provider is installed via the Crossplane Helm chart's `provider.packages` value rather than a separate Provider CR. This avoids the kustomize dry-run problem (Provider CR is a CRD instance that needs the Crossplane CRDs to exist first) and keeps the three-phase pattern clean.
+- **Three-phase Flux reconciliation** — Operators (platform) → CRD instances like ClusterIssuer, ClusterSecretStore, and Crossplane ProviderConfig + managed resources (platform-config) → workloads (apps). This split avoids the Kustomize dry-run failure when CRDs don't exist yet on first deploy.
 
 ## Prerequisites
 
@@ -70,23 +71,23 @@ Terragrunt-managed infrastructure to get a production-ready Kapsule cluster:
 - [x] Environment-aware safety: `delete_additional_resources` protects production from accidental resource deletion
 - [x] Secret Manager bootstrapping (Terragrunt seeds credentials consumed by ESO)
 
-### Phase 2 — GitOps 🔧
+### Phase 2 — GitOps ✅
 FluxCD bootstrap to manage all subsequent components declaratively:
 - [x] Gateway API with Envoy Gateway (traffic routing, canary deployments)
 - [x] TLS automation (cert-manager with Let's Encrypt DNS-01 wildcard)
 - [x] Secret management (External Secrets Operator + Scaleway Secret Manager)
 - [x] CloudNativePG operator (in-cluster PostgreSQL, CNCF)
-- [ ] Observability stack
+- [x] Observability stack
   - [x] Prometheus (metrics collection + alerting rules)
   - [x] Grafana (dashboards)
   - [x] Loki (log aggregation) + Grafana Alloy (collector DaemonSet, replaces Promtail)
   - [x] Tempo (distributed tracing — Alloy already in place as trace collector)
 
-### Phase 3 — Crossplane 🔄
-Cloud resources as Kubernetes custom resources:
-- [x] Crossplane with Scaleway provider
-- [x] Container Registry (sovereign image storage)
-- [x] S3 bucket (CloudNativePG backups)
+### Phase 3 — Crossplane ✅
+Cloud resources as Kubernetes custom resources — Crossplane v2.2 with the Scaleway provider (Upjet-generated, 255 managed resources). Credentials synced from Secret Manager via ESO, same pattern as DNS credentials:
+- [x] Crossplane with Scaleway provider (auto-installed via `provider.packages`)
+- [x] Container Registry (sovereign image storage, private)
+- [x] S3 bucket (CloudNativePG backups, globally unique name)
 
 ### Phase 4 — Application 🚀
 Deploy [sovereign-cloud-wisdom](https://github.com/lejeunen/sovereign-cloud-wisdom) as a real workload:
