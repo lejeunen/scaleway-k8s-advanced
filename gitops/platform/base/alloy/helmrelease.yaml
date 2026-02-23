@@ -112,3 +112,30 @@ spec:
               url = "http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push"
             }
           }
+
+          // ---- Traces ----
+
+          // Receive OTLP traces from instrumented apps
+          otelcol.receiver.otlp "default" {
+            grpc {
+              endpoint = "0.0.0.0:4317"
+            }
+            http {
+              endpoint = "0.0.0.0:4318"
+            }
+
+            output {
+              traces = [otelcol.exporter.otlp.tempo.input]
+            }
+          }
+
+          // Forward traces to Tempo
+          otelcol.exporter.otlp "tempo" {
+            client {
+              endpoint = "tempo.monitoring.svc.cluster.local:4317"
+
+              tls {
+                insecure = true
+              }
+            }
+          }

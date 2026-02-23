@@ -80,7 +80,7 @@ FluxCD bootstrap to manage all subsequent components declaratively:
   - [x] Prometheus (metrics collection + alerting rules)
   - [x] Grafana (dashboards)
   - [x] Loki (log aggregation) + Grafana Alloy (collector DaemonSet, replaces Promtail)
-  - [ ] Tempo (distributed tracing — Alloy already in place as trace collector)
+  - [x] Tempo (distributed tracing — Alloy already in place as trace collector)
 
 ### Phase 3 — Crossplane 📋
 Cloud resources as Kubernetes custom resources:

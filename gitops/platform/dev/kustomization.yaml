@@ -9,5 +9,6 @@ resources:
   - ../base/external-secrets
   - ../base/kube-prometheus-stack
   - ../base/loki
+  - ../base/tempo
 patches:
   - path: envoy-gateway-patch.yaml
