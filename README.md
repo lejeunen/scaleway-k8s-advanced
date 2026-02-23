@@ -82,11 +82,11 @@ FluxCD bootstrap to manage all subsequent components declaratively:
   - [x] Loki (log aggregation) + Grafana Alloy (collector DaemonSet, replaces Promtail)
   - [x] Tempo (distributed tracing — Alloy already in place as trace collector)
 
-### Phase 3 — Crossplane 📋
+### Phase 3 — Crossplane 🔄
 Cloud resources as Kubernetes custom resources:
-- [ ] Crossplane with Scaleway provider
-- [ ] Container Registry (sovereign image storage)
-- [ ] S3 bucket (CloudNativePG backups)
+- [x] Crossplane with Scaleway provider
+- [x] Container Registry (sovereign image storage)
+- [x] S3 bucket (CloudNativePG backups)
 
 ### Phase 4 — Application 🚀
 Deploy [sovereign-cloud-wisdom](https://github.com/lejeunen/sovereign-cloud-wisdom) as a real workload:

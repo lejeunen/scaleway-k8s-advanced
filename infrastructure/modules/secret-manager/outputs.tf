@@ -1,9 +1,9 @@
-output "secret_id" {
-  description = "ID of the secret."
-  value       = scaleway_secret.this.id
+output "secret_ids" {
+  description = "Map of secret name → secret ID."
+  value       = { for k, v in scaleway_secret.this : k => v.id }
 }
 
-output "secret_name" {
-  description = "Name of the secret."
-  value       = scaleway_secret.this.name
+output "secret_names" {
+  description = "Map of secret name → secret name."
+  value       = { for k, v in scaleway_secret.this : k => v.name }
 }

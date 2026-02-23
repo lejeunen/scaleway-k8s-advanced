@@ -1,0 +1,11 @@
+apiVersion: scaleway.upbound.io/v1beta1
+kind: ProviderConfig
+metadata:
+  name: default
+spec:
+  credentials:
+    source: Secret
+    secretRef:
+      name: scaleway-crossplane-credentials
+      namespace: crossplane-system
+      key: credentials

@@ -1,0 +1,34 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: crossplane
+  namespace: crossplane-system
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: crossplane
+      version: "2.2.x"
+      sourceRef:
+        kind: HelmRepository
+        name: crossplane-stable
+      interval: 1h
+  install:
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 3
+      strategy: rollback
+  values:
+    provider:
+      packages:
+        - xpkg.upbound.io/scaleway/provider-scaleway:v0.6.0
+    resourcesCrossplane:
+      requests:
+        memory: 256Mi
+    resourcesRBACManager:
+      requests:
+        memory: 128Mi

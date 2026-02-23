@@ -1,22 +1,15 @@
-variable "secret_name" {
-  description = "Name of the secret in Scaleway Secret Manager."
-  type        = string
-}
-
-variable "secret_data" {
-  description = "The secret value to store."
-  type        = string
-  sensitive   = true
-}
-
-variable "description" {
-  description = "Description of the secret."
-  type        = string
-  default     = null
+variable "secrets" {
+  description = "Map of secrets to create in Scaleway Secret Manager. Keys are secret names."
+  type = map(object({
+    description = optional(string)
+    data        = string
+  }))
+  # Sensitivity is set at the field level via scaleway_secret_version.data,
+  # not here — for_each cannot iterate over a sensitive variable.
 }
 
 variable "tags" {
-  description = "Tags to associate with the secret."
+  description = "Tags to associate with all secrets."
   type        = list(string)
   default     = []
 }

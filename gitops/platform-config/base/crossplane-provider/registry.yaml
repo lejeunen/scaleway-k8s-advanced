@@ -1,0 +1,11 @@
+apiVersion: registry.scaleway.upbound.io/v1alpha1
+kind: RegistryNamespace
+metadata:
+  name: sovereign-cloud-wisdom
+spec:
+  forProvider:
+    name: sovereign-cloud-wisdom
+    region: ${SCW_REGION}
+    isPublic: false
+  providerConfigRef:
+    name: default

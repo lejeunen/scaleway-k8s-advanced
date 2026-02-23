@@ -11,12 +11,24 @@ terraform {
 }
 
 inputs = {
-  secret_name = "scaleway-dns-credentials"
-  description = "Scaleway API credentials for cert-manager DNS-01 solver"
-  tags        = local.env.locals.tags
+  tags = local.env.locals.tags
 
-  secret_data = jsonencode({
-    "access-key" = get_env("SCW_ACCESS_KEY")
-    "secret-key" = get_env("SCW_SECRET_KEY")
-  })
+  secrets = {
+    "scaleway-dns-credentials" = {
+      description = "Scaleway API credentials for cert-manager DNS-01 solver"
+      data = jsonencode({
+        "access-key" = get_env("SCW_ACCESS_KEY")
+        "secret-key" = get_env("SCW_SECRET_KEY")
+      })
+    }
+    "scaleway-crossplane-credentials" = {
+      description = "Scaleway API credentials for Crossplane provider"
+      data = jsonencode({
+        "access_key" = get_env("SCW_ACCESS_KEY")
+        "secret_key" = get_env("SCW_SECRET_KEY")
+        "project_id" = get_env("SCW_DEFAULT_PROJECT_ID")
+        "region"     = local.env.locals.region
+      })
+    }
+  }
 }

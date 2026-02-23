@@ -5,6 +5,7 @@ resources:
   - ../base/cert-manager
   - ../base/cert-manager-scaleway-webhook
   - ../base/cloudnative-pg
+  - ../base/crossplane
   - ../base/envoy-gateway
   - ../base/external-secrets
   - ../base/kube-prometheus-stack
