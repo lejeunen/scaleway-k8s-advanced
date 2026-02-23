@@ -76,8 +76,8 @@ FluxCD bootstrap to manage all subsequent components declaratively:
 - [x] Secret management (External Secrets Operator + Scaleway Secret Manager)
 - [x] CloudNativePG operator (in-cluster PostgreSQL, CNCF)
 - [ ] Observability stack
-  - [ ] Prometheus (metrics collection + alerting rules)
-  - [ ] Grafana (dashboards)
+  - [x] Prometheus (metrics collection + alerting rules)
+  - [x] Grafana (dashboards)
   - [ ] Loki (log aggregation)
   - [ ] Tempo (distributed tracing)
   - [ ] OpenTelemetry Collector (unified telemetry pipeline)

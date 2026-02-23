@@ -6,5 +6,6 @@ resources:
   - ../base/cloudnative-pg
   - ../base/envoy-gateway
   - ../base/external-secrets
+  - ../base/kube-prometheus-stack
 patches:
   - path: envoy-gateway-patch.yaml
