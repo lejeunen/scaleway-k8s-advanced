@@ -48,3 +48,9 @@ spec:
     # Grafana — dashboards from ConfigMaps, no persistence needed
     grafana:
       adminPassword: "${GRAFANA_ADMIN_PASSWORD}"
+      additionalDataSources:
+        - name: Loki
+          type: loki
+          url: http://loki.monitoring.svc.cluster.local:3100
+          access: proxy
+          isDefault: false

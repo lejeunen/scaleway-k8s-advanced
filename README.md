@@ -78,7 +78,7 @@ FluxCD bootstrap to manage all subsequent components declaratively:
 - [ ] Observability stack
   - [x] Prometheus (metrics collection + alerting rules)
   - [x] Grafana (dashboards)
-  - [ ] Loki (log aggregation)
+  - [x] Loki (log aggregation)
   - [ ] Tempo (distributed tracing)
   - [ ] OpenTelemetry Collector (unified telemetry pipeline)
 
