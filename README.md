@@ -48,6 +48,7 @@ This project favors learning-by-doing: each commit is self-contained and tells a
 - **Gateway API over Ingress** — The Kubernetes [Gateway API](https://gateway-api.sigs.k8s.io/) is the successor to the Ingress resource, offering weighted traffic splitting (canary deployments), header-based routing, and cross-namespace references. Since `ingress-nginx` reaches [end-of-life in March 2026](https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/), we use Gateway API from the start.
 - **Envoy Gateway as Gateway API implementation** — Kapsule's managed Cilium supports Gateway API upstream, but Scaleway does not expose the `gatewayAPI.enabled` flag on managed clusters (as of Feb 2026). Since the Cilium installation in `kube-system` is managed by Scaleway and may be overwritten during auto-upgrades, we deploy [Envoy Gateway](https://gateway.envoyproxy.io/) (the CNCF reference implementation) as a standalone controller. All routing manifests use the portable Gateway API spec — if Scaleway enables Cilium Gateway API in the future, the implementation can be swapped with zero changes to route definitions.
 - **External Secrets over sealed-secrets** — ESO integrates with Scaleway's Secret Manager, keeping secrets out of git entirely rather than encrypting them in-repo. Terragrunt seeds the initial secrets; ESO syncs them into the cluster.
+- **Grafana Alloy over Promtail** — Alloy is Grafana's unified telemetry collector (successor to Promtail and Grafana Agent). A single DaemonSet collects logs today and will also collect traces when Tempo is added, eliminating the need for a separate OpenTelemetry Collector. Pragmatic choice: best integration with the Grafana stack (Loki, Tempo, Prometheus) while remaining open-source.
 - **Three-phase Flux reconciliation** — Operators (platform) → CRD instances like ClusterIssuer and ClusterSecretStore (platform-config) → workloads (apps). This split avoids the Kustomize dry-run failure when CRDs don't exist yet on first deploy.
 
 ## Prerequisites
@@ -78,9 +79,8 @@ FluxCD bootstrap to manage all subsequent components declaratively:
 - [ ] Observability stack
   - [x] Prometheus (metrics collection + alerting rules)
   - [x] Grafana (dashboards)
-  - [x] Loki (log aggregation)
-  - [ ] Tempo (distributed tracing)
-  - [ ] OpenTelemetry Collector (unified telemetry pipeline)
+  - [x] Loki (log aggregation) + Grafana Alloy (collector DaemonSet, replaces Promtail)
+  - [ ] Tempo (distributed tracing — Alloy already in place as trace collector)
 
 ### Phase 3 — Crossplane 📋
 Cloud resources as Kubernetes custom resources:
