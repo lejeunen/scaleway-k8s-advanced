@@ -4,7 +4,7 @@ metadata:
   name: cnpg-backups
 spec:
   forProvider:
-    name: ${CLUSTER_NAME}-cnpg-backups
+    name: scw-k8s-advanced-${CLUSTER_NAME}-cnpg-backups
     region: ${SCW_REGION}
     tags:
       env: ${CLUSTER_NAME}
