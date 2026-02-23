@@ -37,6 +37,9 @@ spec:
     prometheus:
       prometheusSpec:
         retention: 15d
+        resources:
+          requests:
+            memory: 512Mi
         storageSpec:
           volumeClaimTemplate:
             spec:
@@ -48,6 +51,9 @@ spec:
     # Grafana — dashboards from ConfigMaps, no persistence needed
     grafana:
       adminPassword: "${GRAFANA_ADMIN_PASSWORD}"
+      resources:
+        requests:
+          memory: 256Mi
       additionalDataSources:
         - name: Loki
           type: loki

@@ -22,6 +22,9 @@ spec:
       strategy: rollback
   values:
     alloy:
+      resources:
+        requests:
+          memory: 128Mi
       configMap:
         content: |-
           // Discover pods on the same node
