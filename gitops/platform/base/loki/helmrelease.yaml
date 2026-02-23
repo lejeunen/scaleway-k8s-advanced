@@ -54,7 +54,11 @@ spec:
     write:
       replicas: 0
 
-    # Disable built-in minio and caches
+    # Disable gateway, minio, caches — not needed in SingleBinary mode
+    gateway:
+      enabled: false
+    lokiCanary:
+      enabled: false
     minio:
       enabled: false
     chunksCache:
