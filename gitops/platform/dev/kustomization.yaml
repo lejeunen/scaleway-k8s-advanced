@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - ../base/cert-manager
   - ../base/cert-manager-scaleway-webhook
+  - ../base/cloudnative-pg
   - ../base/envoy-gateway
   - ../base/external-secrets
 patches:

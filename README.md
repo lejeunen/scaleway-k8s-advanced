@@ -28,6 +28,7 @@ Bootstrap a Kapsule cluster with Terraform/Terragrunt, then manage everything el
 │  │ cert-manager   │  │ Loki          │  │ Secret Mgr   │  │
 │  │ External       │  │ Tempo         │  │              │  │
 │  │   Secrets      │  │               │  │              │  │
+│  │ CloudNativePG  │  │               │  │              │  │
 │  └────────────────┘  └───────────────┘  └──────────────┘  │
 ├───────────────────────────────────────────────────────────┤
 │               Kapsule (Managed Kubernetes)                │
@@ -73,7 +74,7 @@ FluxCD bootstrap to manage all subsequent components declaratively:
 - [x] Gateway API with Envoy Gateway (traffic routing, canary deployments)
 - [x] TLS automation (cert-manager with Let's Encrypt DNS-01 wildcard)
 - [x] Secret management (External Secrets Operator + Scaleway Secret Manager)
-- [ ] CloudNativePG operator (in-cluster PostgreSQL, CNCF)
+- [x] CloudNativePG operator (in-cluster PostgreSQL, CNCF)
 - [ ] Observability stack
   - [ ] Prometheus (metrics collection + alerting rules)
   - [ ] Grafana (dashboards)
