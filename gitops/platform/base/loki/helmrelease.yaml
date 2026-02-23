@@ -54,10 +54,12 @@ spec:
     write:
       replicas: 0
 
-    # Disable gateway, minio, caches — not needed in SingleBinary mode
+    # Disable gateway, canary, test, minio, caches — not needed in SingleBinary mode
     gateway:
       enabled: false
     lokiCanary:
+      enabled: false
+    test:
       enabled: false
     minio:
       enabled: false
