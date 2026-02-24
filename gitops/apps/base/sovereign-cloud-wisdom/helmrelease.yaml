@@ -20,7 +20,7 @@ spec:
       pullSecret: sovereign-cloud-wisdom-registry
     database:
       secret: wisdom-db-app
-    cloudProvider: scaleway
+    cloudProvider: scw-advanced
   install:
     createNamespace: true
     remediation:
