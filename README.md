@@ -118,7 +118,7 @@ Deploy [sovereign-cloud-wisdom](https://github.com/lejeunen/sovereign-cloud-wisd
 - [x] HTTPRoute on `wisdom.scw.sovereigncloudwisdom.eu` via Envoy Gateway
 - [ ] CNPG S3 backups (bucket exists via Crossplane, needs credential wiring)
 - [x] DNS record for `wisdom.scw.sovereigncloudwisdom.eu` (via external-dns)
-- [ ] Grafana HTTPRoute on `grafana.scw.sovereigncloudwisdom.eu`
+- [x] Grafana HTTPRoute on `grafana.scw.sovereigncloudwisdom.eu`
 - [ ] Flux image automation (auto-deploy on new image tags)
 - [ ] API auth token via ExternalSecret
 

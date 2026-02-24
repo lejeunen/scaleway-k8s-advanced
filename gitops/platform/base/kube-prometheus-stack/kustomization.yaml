@@ -5,3 +5,4 @@ resources:
   - helmrepository.yaml
   - helmrelease.yaml
   - externalsecret-grafana-credentials.yaml
+  - httproute-grafana.yaml
