@@ -15,8 +15,12 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
+    image:
+      repository: rg.fr-par.scw.cloud/sovereign-cloud-wisdom/sovereign-cloud-wisdom
+      pullSecret: sovereign-cloud-wisdom-registry
     database:
       secret: wisdom-db-app
+    cloudProvider: scaleway
   install:
     createNamespace: true
     remediation:
