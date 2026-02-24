@@ -5,7 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
-    - name: platform-config
+    - name: crossplane
   interval: 10m
   sourceRef:
     kind: GitRepository

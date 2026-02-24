@@ -19,17 +19,22 @@ Bootstrap a Kapsule cluster with Terraform/Terragrunt, then manage everything el
 │                     GitOps (FluxCD)                       │
 │          Declarative, git-driven reconciliation           │
 │                                                           │
-│  ┌────────────────┐  ┌───────────────┐  ┌──────────────┐  │
-│  │    Platform    │  │ Observability │  │  Crossplane  │  │
-│  │   Components   │  │     Stack     │  │  Providers   │  │
-│  │                │  │               │  │              │  │
-│  │ Envoy Gateway  │  │ Prometheus    │  │ S3 Bucket    │  │
-│  │  (Gateway API) │  │ Grafana       │  │ Container    │  │
-│  │ cert-manager   │  │ Loki          │  │  Registry    │  │
-│  │ External       │  │ Tempo         │  │              │  │
-│  │   Secrets      │  │ Alloy         │  │ (Scaleway    │  │
-│  │ CloudNativePG  │  │               │  │  Provider)   │  │
-│  └────────────────┘  └───────────────┘  └──────────────┘  │
+│  ┌────────────────┐  ┌───────────────┐                    │
+│  │    Platform    │  │ Observability │                    │
+│  │   Components   │  │     Stack     │                    │
+│  │                │  │               │                    │
+│  │ Envoy Gateway  │  │ Prometheus    │                    │
+│  │  (Gateway API) │  │ Grafana       │                    │
+│  │ cert-manager   │  │ Loki          │                    │
+│  │ External       │  │ Tempo         │                    │
+│  │   Secrets      │  │ Alloy         │                    │
+│  │ CloudNativePG  │  │               │                    │
+│  │ Crossplane     │  │               │                    │
+│  └────────────────┘  └───────────────┘                    │
+├───────────────────────────────────────────────────────────┤
+│                   Crossplane (Scaleway)                    │
+│           Cloud resources as Kubernetes CRs               │
+│        S3 Bucket · Container Registry · DNS · ...         │
 ├───────────────────────────────────────────────────────────┤
 │               Kapsule (Managed Kubernetes)                │
 │                   VPC + Private Network                   │
@@ -39,6 +44,21 @@ Bootstrap a Kapsule cluster with Terraform/Terragrunt, then manage everything el
 ```
 
 This project favors learning-by-doing: each commit is self-contained and tells a story. Browse the [commit history](https://github.com/lejeunen/scaleway-k8s-advanced/commits/main) for step-by-step implementation details.
+
+## Repository Structure
+
+Each top-level directory is owned by a specific tool — you always know what manages a resource by where it lives:
+
+| Directory | Managed by | Purpose |
+|-----------|------------|---------|
+| `infrastructure/` | Terraform/Terragrunt | Bootstrap: VPC, Kapsule cluster, Secret Manager |
+| `gitops/platform/` | Flux | Operators installed via HelmReleases |
+| `gitops/platform-config/` | Flux | CRD instances that configure operators (ClusterIssuer, ProviderConfig, ...) |
+| `gitops/crossplane/` | Crossplane | Cloud infrastructure resources (S3 buckets, Container Registry, ...) |
+| `gitops/apps/` | Flux | Application workloads |
+| `gitops/clusters/` | Flux | Per-environment Kustomization entrypoints and variable substitution |
+
+Flux reconciliation order: **platform** → **platform-config** → **crossplane** → **apps**
 
 ## Key Design Decisions
 
@@ -50,7 +70,7 @@ This project favors learning-by-doing: each commit is self-contained and tells a
 - **External Secrets over sealed-secrets** — ESO integrates with Scaleway's Secret Manager, keeping secrets out of git entirely rather than encrypting them in-repo. Terragrunt seeds the initial secrets; ESO syncs them into the cluster.
 - **Grafana Alloy over Promtail** — Alloy is Grafana's unified telemetry collector (successor to Promtail and Grafana Agent). A single DaemonSet collects logs today and will also collect traces when Tempo is added, eliminating the need for a separate OpenTelemetry Collector. Pragmatic choice: best integration with the Grafana stack (Loki, Tempo, Prometheus) while remaining open-source.
 - **Crossplane provider auto-install** — The Scaleway provider is installed via the Crossplane Helm chart's `provider.packages` value rather than a separate Provider CR. This avoids the kustomize dry-run problem (Provider CR is a CRD instance that needs the Crossplane CRDs to exist first) and keeps the three-phase pattern clean.
-- **Three-phase Flux reconciliation** — Operators (platform) → CRD instances like ClusterIssuer, ClusterSecretStore, and Crossplane ProviderConfig + managed resources (platform-config) → workloads (apps). This split avoids the Kustomize dry-run failure when CRDs don't exist yet on first deploy.
+- **Four-phase Flux reconciliation** — Operators (platform) → CRD instances like ClusterIssuer, ClusterSecretStore, ProviderConfig (platform-config) → Crossplane-managed cloud resources like S3 buckets and Container Registry (crossplane) → workloads (apps). Each phase `dependsOn` the previous one, avoiding Kustomize dry-run failures when CRDs don't exist yet. This "umbrella Kustomization per phase" is a deliberate simplification — at scale, each component would get its own Flux Kustomization with explicit per-component dependencies (DAG), trading readability for granular failure isolation and independent retries.
 
 ## Prerequisites
 
