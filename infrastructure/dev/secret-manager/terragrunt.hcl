@@ -33,6 +33,7 @@ inputs = {
     "grafana-admin-credentials" = {
       description = "Grafana admin credentials"
       data = jsonencode({
+        "admin-user"     = "admin"
         "admin-password" = get_env("GRAFANA_ADMIN_PASSWORD")
       })
     }
