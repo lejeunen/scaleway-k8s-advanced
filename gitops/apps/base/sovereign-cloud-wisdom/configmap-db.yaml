@@ -1,0 +1,10 @@
+# Non-sensitive DB connection info — consumed by the app Deployment
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wisdom-db-config
+  namespace: wisdom
+data:
+  host: wisdom-db-rw.wisdom.svc
+  port: "5432"
+  dbname: app

@@ -1,0 +1,21 @@
+# CNPG PostgreSQL instance — auto-creates wisdom-db-app secret with credentials
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: wisdom-db
+  namespace: wisdom
+spec:
+  instances: 1
+  storage:
+    size: 1Gi
+  resources:
+    requests:
+      memory: 256Mi
+  postgresql:
+    parameters:
+      shared_buffers: "64MB"
+      effective_cache_size: "128MB"
+  bootstrap:
+    initdb:
+      database: app
+      owner: app_admin

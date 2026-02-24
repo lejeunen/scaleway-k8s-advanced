@@ -3,3 +3,7 @@ kind: Kustomization
 resources:
   - gitrepository.yaml
   - helmrelease.yaml
+  - cnpg-cluster.yaml
+  - configmap-db.yaml
+  - externalsecret-registry.yaml
+  - httproute.yaml
