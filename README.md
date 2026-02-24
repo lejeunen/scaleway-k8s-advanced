@@ -89,14 +89,17 @@ Cloud resources as Kubernetes custom resources — Crossplane v2.2 with the Scal
 - [x] Container Registry (sovereign image storage, private)
 - [x] S3 bucket (CloudNativePG backups, globally unique name)
 
-### Phase 4 — Application 🚀
-Deploy [sovereign-cloud-wisdom](https://github.com/lejeunen/sovereign-cloud-wisdom) as a real workload:
-- [ ] Dedicated Helm chart (in the app repo, simple and app-specific)
-- [ ] CloudNativePG Cluster instance (app database, S3 backups via Crossplane bucket)
-- [ ] ExternalSecrets for DB credentials and API auth token
-- [ ] HTTPRoute on `wisdom.scw.sovereigncloudwisdom.eu`
-- [ ] Grafana HTTPRoute on `grafana.scw.sovereigncloudwisdom.eu` (admin password moved to Secret Manager via ESO)
+### Phase 4 — Application ✅
+Deploy [sovereign-cloud-wisdom](https://github.com/lejeunen/sovereign-cloud-wisdom) as a real workload. The Helm chart in the app repo is **platform-agnostic** (Deployment + Service only) — all Scaleway-specific wiring (CNPG, ESO, Gateway routing) lives in this repo:
+- [x] Platform-agnostic Helm chart (DB config via ConfigMap, credentials via Secret — no CNPG/ESO/Scaleway coupling)
+- [x] CloudNativePG Cluster instance (1-instance PostgreSQL, auto-created credentials)
+- [x] ExternalSecret for private registry pull credentials (ESO → Scaleway Secret Manager)
+- [x] HTTPRoute on `wisdom.scw.sovereigncloudwisdom.eu` via Envoy Gateway
+- [ ] CNPG S3 backups (bucket exists via Crossplane, needs credential wiring)
+- [ ] DNS record for `wisdom.scw.sovereigncloudwisdom.eu`
+- [ ] Grafana HTTPRoute on `grafana.scw.sovereigncloudwisdom.eu`
 - [ ] Flux image automation (auto-deploy on new image tags)
+- [ ] API auth token via ExternalSecret
 
 ### Phase 5 — CI/CD 📋
 - [ ] GitHub Actions pipeline (build, test, push image on commit)
