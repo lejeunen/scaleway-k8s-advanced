@@ -50,7 +50,9 @@ spec:
 
     # Grafana — dashboards from ConfigMaps, no persistence needed
     grafana:
-      adminPassword: "${GRAFANA_ADMIN_PASSWORD}"
+      admin:
+        existingSecret: grafana-admin-credentials
+        passwordKey: admin-password
       resources:
         requests:
           memory: 256Mi
