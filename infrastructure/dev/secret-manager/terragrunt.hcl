@@ -30,6 +30,12 @@ inputs = {
         "region"     = local.env.locals.region
       })
     }
+    "grafana-admin-credentials" = {
+      description = "Grafana admin credentials"
+      data = jsonencode({
+        "admin-password" = get_env("GRAFANA_ADMIN_PASSWORD")
+      })
+    }
     "wisdom-registry-credentials" = {
       description = "Docker config JSON for pulling sovereign-cloud-wisdom images"
       data = jsonencode({
