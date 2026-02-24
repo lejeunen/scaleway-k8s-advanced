@@ -30,5 +30,16 @@ inputs = {
         "region"     = local.env.locals.region
       })
     }
+    "wisdom-registry-credentials" = {
+      description = "Docker config JSON for pulling sovereign-cloud-wisdom images"
+      data = jsonencode({
+        auths = {
+          "rg.fr-par.scw.cloud" = {
+            username = "nologin"
+            password = get_env("SCW_SECRET_KEY")
+          }
+        }
+      })
+    }
   }
 }
