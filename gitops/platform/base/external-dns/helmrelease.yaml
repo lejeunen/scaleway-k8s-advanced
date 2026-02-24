@@ -1,0 +1,46 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: external-dns
+  namespace: external-dns
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: external-dns
+      version: "1.19.x"
+      sourceRef:
+        kind: HelmRepository
+        name: external-dns
+      interval: 1h
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+      strategy: rollback
+  values:
+    provider:
+      name: scaleway
+    sources:
+      - gateway-httproute
+    domainFilters:
+      - sovereigncloudwisdom.eu
+    policy: sync
+    txtOwnerId: scw-k8s-advanced-${CLUSTER_NAME}
+    txtPrefix: _externaldns.
+    env:
+      - name: SCW_ACCESS_KEY
+        valueFrom:
+          secretKeyRef:
+            name: scaleway-dns-credentials
+            key: SCW_ACCESS_KEY
+      - name: SCW_SECRET_KEY
+        valueFrom:
+          secretKeyRef:
+            name: scaleway-dns-credentials
+            key: SCW_SECRET_KEY
+    resources:
+      requests:
+        memory: 64Mi

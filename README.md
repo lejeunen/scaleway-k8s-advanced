@@ -97,6 +97,7 @@ FluxCD bootstrap to manage all subsequent components declaratively:
 - [x] TLS automation (cert-manager with Let's Encrypt DNS-01 wildcard)
 - [x] Secret management (External Secrets Operator + Scaleway Secret Manager)
 - [x] CloudNativePG operator (in-cluster PostgreSQL, CNCF)
+- [x] external-dns (automatic DNS records from Gateway API HTTPRoutes → Scaleway DNS)
 - [x] Observability stack
   - [x] Prometheus (metrics collection + alerting rules)
   - [x] Grafana (dashboards)
@@ -116,7 +117,7 @@ Deploy [sovereign-cloud-wisdom](https://github.com/lejeunen/sovereign-cloud-wisd
 - [x] ExternalSecret for private registry pull credentials (ESO → Scaleway Secret Manager)
 - [x] HTTPRoute on `wisdom.scw.sovereigncloudwisdom.eu` via Envoy Gateway
 - [ ] CNPG S3 backups (bucket exists via Crossplane, needs credential wiring)
-- [ ] DNS record for `wisdom.scw.sovereigncloudwisdom.eu`
+- [x] DNS record for `wisdom.scw.sovereigncloudwisdom.eu` (via external-dns)
 - [ ] Grafana HTTPRoute on `grafana.scw.sovereigncloudwisdom.eu`
 - [ ] Flux image automation (auto-deploy on new image tags)
 - [ ] API auth token via ExternalSecret
