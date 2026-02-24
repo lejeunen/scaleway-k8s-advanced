@@ -37,6 +37,13 @@ inputs = {
         "admin-password" = get_env("GRAFANA_ADMIN_PASSWORD")
       })
     }
+    "cnpg-s3-credentials" = {
+      description = "S3 credentials for CNPG barman-cloud backups"
+      data = jsonencode({
+        "ACCESS_KEY_ID"     = get_env("SCW_ACCESS_KEY")
+        "ACCESS_SECRET_KEY" = get_env("SCW_SECRET_KEY")
+      })
+    }
     "wisdom-registry-credentials" = {
       description = "Docker config JSON for pulling sovereign-cloud-wisdom images"
       data = jsonencode({
