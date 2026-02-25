@@ -12,3 +12,7 @@ spec:
     name: flux-system
   path: ./gitops/apps/dev
   prune: true
+  postBuild:
+    substitute:
+      SCW_REGION: "fr-par"
+      CLUSTER_NAME: "dev"
