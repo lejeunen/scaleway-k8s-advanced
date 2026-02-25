@@ -116,7 +116,7 @@ Deploy [sovereign-cloud-wisdom](https://github.com/lejeunen/sovereign-cloud-wisd
 - [x] CloudNativePG Cluster instance (1-instance PostgreSQL, auto-created credentials)
 - [x] ExternalSecret for private registry pull credentials (ESO → Scaleway Secret Manager)
 - [x] HTTPRoute on `wisdom.scw.sovereigncloudwisdom.eu` via Envoy Gateway
-- [ ] CNPG S3 backups (bucket exists via Crossplane, needs credential wiring)
+- [x] CNPG S3 backups (barman-cloud plugin, daily scheduled, 3d retention)
 - [x] DNS record for `wisdom.scw.sovereigncloudwisdom.eu` (via external-dns)
 - [x] Grafana HTTPRoute on `grafana.scw.sovereigncloudwisdom.eu`
 - [ ] Flux image automation (auto-deploy on new image tags)
