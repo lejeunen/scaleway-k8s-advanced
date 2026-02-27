@@ -122,6 +122,19 @@ Deploy [sovereign-cloud-wisdom](https://github.com/lejeunen/sovereign-cloud-wisd
 - [ ] Flux image automation (auto-deploy on new image tags)
 - [ ] API auth token via ExternalSecret
 
-### Phase 5 — CI/CD 📋
+### Phase 5 — Security Hardening 📋
+Defense in depth — perimeter, internal, access control and audit:
+- [ ] Kapsule API server allowed IPs (Crossplane `Acl` — restrict who can `kubectl` to the cluster)
+- [ ] Security groups on Kapsule node pool (Terraform — restrict inbound/outbound at instance level)
+- [ ] Edge Services WAF pipeline (Crossplane — OWASP CRS protection on public HTTP endpoints)
+- [ ] Cilium NetworkPolicies (GitOps — default-deny per namespace, whitelist allowed pod-to-pod traffic)
+- [ ] Pod Security Standards (GitOps — `enforce: restricted` or `baseline` labels on all namespaces)
+- [ ] PodDisruptionBudgets (GitOps — protect workloads during Kapsule auto-upgrade node drains)
+- [ ] Envoy Gateway rate limiting (GitOps — `BackendTrafficPolicy` to throttle abusive clients at L7)
+- [ ] IAM least-privilege (Crossplane `Application` + `Policy` — scoped API keys per service instead of broad credentials)
+- [ ] Audit Trail (Scaleway console — cloud-level logging of all API actions for compliance)
+- [ ] RBAC hardening (namespace-scoped roles — relevant for multi-team production, optional for single-operator)
+
+### Phase 6 — CI/CD 📋
 - [ ] GitHub Actions pipeline (build, test, push image on commit)
 - [ ] OIDC federation with Scaleway (no stored credentials)
