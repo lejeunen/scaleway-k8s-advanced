@@ -39,7 +39,7 @@ spec:
         retention: 15d
         resources:
           requests:
-            memory: 512Mi
+            memory: 768Mi
         storageSpec:
           volumeClaimTemplate:
             spec:
