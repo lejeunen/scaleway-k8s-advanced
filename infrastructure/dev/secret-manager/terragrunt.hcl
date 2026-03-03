@@ -44,6 +44,12 @@ inputs = {
         "ACCESS_SECRET_KEY" = get_env("SCW_SECRET_KEY")
       })
     }
+    "matomo-admin-credentials" = {
+      description = "Matomo admin credentials for web analytics"
+      data = jsonencode({
+        "matomo-password" = get_env("MATOMO_ADMIN_PASSWORD")
+      })
+    }
     "wisdom-registry-credentials" = {
       description = "Docker config JSON for pulling sovereign-cloud-wisdom images"
       data = jsonencode({
