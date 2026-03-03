@@ -4,5 +4,6 @@ metadata:
   name: bitnami
   namespace: matomo
 spec:
+  type: oci
   interval: 1h
-  url: https://charts.bitnami.com/bitnami
+  url: oci://registry-1.docker.io/bitnamicharts
