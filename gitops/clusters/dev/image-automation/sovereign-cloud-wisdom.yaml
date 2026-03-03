@@ -1,0 +1,26 @@
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: sovereign-cloud-wisdom
+  namespace: flux-system
+spec:
+  image: rg.fr-par.scw.cloud/sovereign-cloud-wisdom/sovereign-cloud-wisdom
+  interval: 5m
+  provider: generic
+  secretRef:
+    name: sovereign-cloud-wisdom-registry
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: sovereign-cloud-wisdom
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: sovereign-cloud-wisdom
+  filterTags:
+    pattern: '^(?P<ts>\d+)-[a-f0-9]+$'
+    extract: '$ts'
+  policy:
+    numerical:
+      order: asc
