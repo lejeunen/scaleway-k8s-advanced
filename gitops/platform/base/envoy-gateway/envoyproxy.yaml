@@ -1,0 +1,15 @@
+# Configures the data-plane proxy provisioned by Envoy Gateway.
+# Adds Scaleway LB annotation to enable PROXY protocol v2,
+# so the real client IP is forwarded to Envoy.
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: proxy-config
+  namespace: envoy-gateway-system
+spec:
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyService:
+        annotations:
+          service.beta.kubernetes.io/scw-loadbalancer-proxy-protocol-v2: "true"
