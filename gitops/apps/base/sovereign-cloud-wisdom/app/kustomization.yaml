@@ -7,3 +7,4 @@ resources:
   - externalsecret-registry.yaml
   - configmap-matomo.yaml
   - externalsecret-matomo.yaml
+  - externalsecret-api.yaml

@@ -57,6 +57,12 @@ inputs = {
         "token" = get_env("MATOMO_TOKEN_AUTH")
       })
     }
+    "wisdom-api-auth-token" = {
+      description = "Bearer token for sovereign-cloud-wisdom write API"
+      data = jsonencode({
+        "token" = get_env("WISDOM_API_AUTH_TOKEN")
+      })
+    }
     "wisdom-registry-credentials" = {
       description = "Docker config JSON for pulling sovereign-cloud-wisdom images"
       data = jsonencode({
