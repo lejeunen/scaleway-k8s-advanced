@@ -1,0 +1,101 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: matomo-data
+  namespace: matomo
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: matomo
+  namespace: matomo
+  labels:
+    app: matomo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: matomo
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: matomo
+    spec:
+      initContainers:
+        - name: geoip-download
+          image: busybox:1.37
+          command:
+            - sh
+            - -c
+            - |
+              wget -q -O /geoip/DBIP-City.mmdb.gz \
+                "https://download.db-ip.com/free/dbip-city-lite-$(date +%Y-%m).mmdb.gz" && \
+              gunzip -f /geoip/DBIP-City.mmdb.gz && \
+              echo "GeoIP database downloaded successfully"
+          volumeMounts:
+            - name: geoip
+              mountPath: /geoip
+      containers:
+        - name: matomo
+          image: matomo:5-apache
+          ports:
+            - containerPort: 80
+          env:
+            - name: MATOMO_DATABASE_HOST
+              value: mariadb
+            - name: MATOMO_DATABASE_DBNAME
+              value: matomo
+            - name: MATOMO_DATABASE_USERNAME
+              value: matomo
+            - name: MATOMO_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-credentials
+                  key: password
+          volumeMounts:
+            - name: data
+              mountPath: /var/www/html
+            - name: geoip
+              mountPath: /var/www/html/misc/DBIP-City.mmdb
+              subPath: DBIP-City.mmdb
+          livenessProbe:
+            tcpSocket:
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          readinessProbe:
+            tcpSocket:
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: 256Mi
+            limits:
+              memory: 512Mi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: matomo-data
+        - name: geoip
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: matomo
+  namespace: matomo
+spec:
+  selector:
+    app: matomo
+  ports:
+    - port: 80
+      targetPort: 80

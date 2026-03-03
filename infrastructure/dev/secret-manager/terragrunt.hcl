@@ -44,10 +44,11 @@ inputs = {
         "ACCESS_SECRET_KEY" = get_env("SCW_SECRET_KEY")
       })
     }
-    "matomo-admin-credentials" = {
-      description = "Matomo admin credentials for web analytics"
+    "matomo-mariadb-credentials" = {
+      description = "MariaDB credentials for Matomo"
       data = jsonencode({
-        "matomo-password" = get_env("MATOMO_ADMIN_PASSWORD")
+        "password"      = get_env("MATOMO_ADMIN_PASSWORD")
+        "root-password" = get_env("MATOMO_ADMIN_PASSWORD")
       })
     }
     "wisdom-registry-credentials" = {
