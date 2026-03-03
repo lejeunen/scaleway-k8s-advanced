@@ -119,7 +119,7 @@ Deploy [sovereign-cloud-wisdom](https://github.com/lejeunen/sovereign-cloud-wisd
 - [x] CNPG S3 backups (barman-cloud plugin, daily scheduled, 3d retention)
 - [x] DNS record for `wisdom.scw.sovereigncloudwisdom.eu` (via external-dns)
 - [x] Grafana HTTPRoute on `grafana.scw.sovereigncloudwisdom.eu`
-- [ ] Flux image automation (auto-deploy on new image tags)
+- [x] Flux image automation (ImageRepository + ImagePolicy + ImageUpdateAutomation, timestamp-SHA tags)
 - [ ] API auth token via ExternalSecret
 
 ### Phase 5 — Security Hardening 📋
