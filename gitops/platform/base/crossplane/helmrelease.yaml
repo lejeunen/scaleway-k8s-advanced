@@ -28,7 +28,7 @@ spec:
         - xpkg.upbound.io/scaleway/provider-scaleway:v0.6.0
     resourcesCrossplane:
       requests:
-        memory: 256Mi
+        memory: 384Mi
     resourcesRBACManager:
       requests:
         memory: 128Mi
