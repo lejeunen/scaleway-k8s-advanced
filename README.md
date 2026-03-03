@@ -128,7 +128,7 @@ Defense in depth — perimeter, internal, access control and audit:
 - [ ] Security groups on Kapsule node pool (Terraform — restrict inbound/outbound at instance level)
 - [ ] Edge Services WAF pipeline (Crossplane — OWASP CRS protection on public HTTP endpoints)
 - [ ] Cilium NetworkPolicies (GitOps — default-deny per namespace, whitelist allowed pod-to-pod traffic)
-- [ ] Pod Security Standards (GitOps — `enforce: restricted` or `baseline` labels on all namespaces)
+- [x] Pod Security Standards (GitOps — `enforce: baseline` + `warn: restricted` labels on all namespaces)
 - [ ] PodDisruptionBudgets (GitOps — protect workloads during Kapsule auto-upgrade node drains)
 - [ ] Envoy Gateway rate limiting (GitOps — `BackendTrafficPolicy` to throttle abusive clients at L7)
 - [ ] IAM least-privilege (Crossplane `Application` + `Policy` — scoped API keys per service instead of broad credentials)
