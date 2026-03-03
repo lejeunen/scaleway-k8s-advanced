@@ -5,3 +5,5 @@ resources:
   - helmrelease.yaml
   - httproute.yaml
   - externalsecret-registry.yaml
+  - configmap-matomo.yaml
+  - externalsecret-matomo.yaml

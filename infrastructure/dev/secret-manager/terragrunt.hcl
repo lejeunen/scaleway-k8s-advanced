@@ -51,6 +51,12 @@ inputs = {
         "root-password" = get_env("MATOMO_ADMIN_PASSWORD")
       })
     }
+    "matomo-token-auth" = {
+      description = "Matomo auth token for server-side tracking"
+      data = jsonencode({
+        "token" = get_env("MATOMO_TOKEN_AUTH")
+      })
+    }
     "wisdom-registry-credentials" = {
       description = "Docker config JSON for pulling sovereign-cloud-wisdom images"
       data = jsonencode({
