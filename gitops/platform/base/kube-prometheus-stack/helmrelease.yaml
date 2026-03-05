@@ -54,6 +54,12 @@ spec:
       admin:
         existingSecret: grafana-admin-credentials
         passwordKey: admin-password
+      grafana.ini:
+        auth.anonymous:
+          enabled: true
+          org_role: Admin
+        auth:
+          disable_login_form: true
       resources:
         requests:
           memory: 256Mi
