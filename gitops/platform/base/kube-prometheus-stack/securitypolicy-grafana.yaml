@@ -1,0 +1,21 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: oidc-google
+  namespace: monitoring
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: grafana
+  oidc:
+    provider:
+      issuer: "https://accounts.google.com"
+    clientID: "${GOOGLE_OIDC_CLIENT_ID}"
+    clientSecret:
+      name: "google-oidc-client-secret"
+    redirectURL: "https://grafana.scw.sovereigncloudwisdom.eu/oauth2/callback"
+    scopes:
+      - openid
+      - email
+    cookieDomain: "scw.sovereigncloudwisdom.eu"

@@ -8,6 +8,7 @@ resources:
   - ../base/plugin-barman-cloud
   - ../base/crossplane
   - ../base/envoy-gateway
+  - ../base/flux-web-ui
   - ../base/external-dns
   - ../base/external-secrets
   - ../base/kube-prometheus-stack

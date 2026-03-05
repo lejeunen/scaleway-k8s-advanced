@@ -16,3 +16,4 @@ spec:
       SCW_PROJECT_ID: "25485e2e-7a3a-40ae-8d0c-1496ef7c5e0f"
       SCW_REGION: "fr-par"
       CLUSTER_NAME: "dev"
+      GOOGLE_OIDC_CLIENT_ID: "484522706079-b6vgq5v59u03nmhodubf1e57545gq9bs.apps.googleusercontent.com"
