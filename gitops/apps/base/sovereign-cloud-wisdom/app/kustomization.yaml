@@ -8,3 +8,4 @@ resources:
   - configmap-matomo.yaml
   - externalsecret-matomo.yaml
   - externalsecret-api.yaml
+  - network-policy.yaml

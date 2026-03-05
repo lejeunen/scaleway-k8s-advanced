@@ -1,0 +1,37 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: wisdom-db
+  namespace: wisdom
+spec:
+  endpointSelector:
+    matchLabels:
+      cnpg.io/cluster: wisdom-db
+  ingress:
+    # Allow connections from the app
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: sovereign-cloud-wisdom
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+  egress:
+    # DNS resolution
+    - toEndpoints:
+        - matchLabels:
+            k8s-app: kube-dns
+            k8s:io.kubernetes.pod.namespace: kube-system
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    # S3 backups to Scaleway Object Storage (barman-cloud)
+    - toFQDNs:
+        - matchPattern: "*.scw.cloud"
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP

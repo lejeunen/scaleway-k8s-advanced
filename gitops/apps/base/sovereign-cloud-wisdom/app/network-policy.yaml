@@ -1,0 +1,59 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: sovereign-cloud-wisdom
+  namespace: wisdom
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: sovereign-cloud-wisdom
+  ingress:
+    # Allow traffic from Envoy Gateway proxy
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: envoy
+            k8s:io.kubernetes.pod.namespace: envoy-gateway-system
+      toPorts:
+        - ports:
+            - port: "8000"
+              protocol: TCP
+  egress:
+    # DNS resolution
+    - toEndpoints:
+        - matchLabels:
+            k8s-app: kube-dns
+            k8s:io.kubernetes.pod.namespace: kube-system
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    # PostgreSQL (CNPG) in same namespace
+    - toEndpoints:
+        - matchLabels:
+            cnpg.io/cluster: wisdom-db
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+    # Matomo analytics tracking (cross-namespace)
+    - toEndpoints:
+        - matchLabels:
+            app: matomo
+            k8s:io.kubernetes.pod.namespace: matomo
+      toPorts:
+        - ports:
+            - port: "80"
+              protocol: TCP
+    # OTLP traces to Alloy (monitoring)
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: alloy
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports:
+            - port: "4317"
+              protocol: TCP
+            - port: "4318"
+              protocol: TCP

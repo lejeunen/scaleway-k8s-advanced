@@ -6,3 +6,4 @@ resources:
   - scheduledbackup.yaml
   - configmap-db.yaml
   - externalsecret-s3.yaml
+  - network-policy.yaml
