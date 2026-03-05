@@ -9,3 +9,4 @@ resources:
   - externalsecret-oidc.yaml
   - httproute-grafana.yaml
   - securitypolicy-grafana.yaml
+  - network-policy.yaml

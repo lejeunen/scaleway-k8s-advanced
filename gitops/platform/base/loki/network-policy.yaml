@@ -1,0 +1,54 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: loki
+  namespace: monitoring
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: loki
+  ingress:
+    # Alloy ships logs
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: alloy
+      toPorts:
+        - ports:
+            - port: "3100"
+              protocol: TCP
+    # Grafana queries logs
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: grafana
+      toPorts:
+        - ports:
+            - port: "3100"
+              protocol: TCP
+    # Loki memberlist (inter-pod, for future scaling)
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: loki
+      toPorts:
+        - ports:
+            - port: "7946"
+              protocol: TCP
+  egress:
+    # DNS
+    - toEndpoints:
+        - matchLabels:
+            k8s-app: kube-dns
+            k8s:io.kubernetes.pod.namespace: kube-system
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    # Loki memberlist
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: loki
+      toPorts:
+        - ports:
+            - port: "7946"
+              protocol: TCP
