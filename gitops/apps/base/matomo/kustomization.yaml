@@ -6,3 +6,5 @@ resources:
   - mariadb.yaml
   - matomo.yaml
   - httproute.yaml
+  - securitypolicy.yaml
+  - externalsecret-oidc.yaml
