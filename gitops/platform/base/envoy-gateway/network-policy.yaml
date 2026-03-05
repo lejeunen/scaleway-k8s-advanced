@@ -13,7 +13,7 @@ spec:
         - world
       toPorts:
         - ports:
-            - port: "443"
+            - port: "10443"
               protocol: TCP
   egress:
     # DNS
