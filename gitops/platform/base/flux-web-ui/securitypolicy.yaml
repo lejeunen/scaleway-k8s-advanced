@@ -19,3 +19,15 @@ spec:
       - openid
       - email
     cookieDomain: "scw.sovereigncloudwisdom.eu"
+  authorization:
+    defaultAction: Deny
+    rules:
+      - name: allow-nicolas
+        action: Allow
+        principal:
+          jwt:
+            provider: oidc-google
+            claims:
+              - name: email
+                values:
+                  - "lejeune.n@gmail.com"
