@@ -63,6 +63,12 @@ spec:
       resources:
         requests:
           memory: 256Mi
+      extraSecretMounts:
+        - name: cockpit-token
+          secretName: cockpit-query-token
+          defaultMode: 0440
+          mountPath: /etc/secrets/cockpit-query-token
+          readOnly: true
       additionalDataSources:
         - name: Loki
           type: loki
@@ -74,3 +80,21 @@ spec:
           url: http://tempo.monitoring.svc.cluster.local:3200
           access: proxy
           isDefault: false
+        - name: Cockpit Metrics
+          type: prometheus
+          url: https://728b26ea-7acd-4194-9dc5-c45433d98874.metrics.cockpit.fr-par.scw.cloud/prometheus
+          access: proxy
+          isDefault: false
+          jsonData:
+            httpHeaderName1: X-Token
+          secureJsonData:
+            httpHeaderValue1: $__file{/etc/secrets/cockpit-query-token/token}
+        - name: Cockpit Logs
+          type: loki
+          url: https://f2396305-99b7-42fe-a75c-b59411156639.logs.cockpit.fr-par.scw.cloud
+          access: proxy
+          isDefault: false
+          jsonData:
+            httpHeaderName1: X-Token
+          secureJsonData:
+            httpHeaderValue1: $__file{/etc/secrets/cockpit-query-token/token}
