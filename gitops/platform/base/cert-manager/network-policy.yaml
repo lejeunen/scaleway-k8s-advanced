@@ -31,6 +31,7 @@ spec:
               protocol: TCP
     # K8s API server
     - toEntities:
+        - kube-apiserver
         - host
         - remote-node
       toPorts:
@@ -76,6 +77,7 @@ spec:
               protocol: TCP
     # K8s API server
     - toEntities:
+        - kube-apiserver
         - host
         - remote-node
       toPorts:
@@ -93,8 +95,10 @@ spec:
     matchLabels:
       app.kubernetes.io/name: webhook
   ingress:
-    # K8s API server calls admission webhooks
+    # Managed Kapsule API server calls admission webhooks
     - fromEntities:
+        - kube-apiserver
+        - kube-apiserver
         - host
         - remote-node
       toPorts:
@@ -115,6 +119,8 @@ spec:
               protocol: TCP
     # K8s API server
     - toEntities:
+        - kube-apiserver
+        - kube-apiserver
         - host
         - remote-node
       toPorts:

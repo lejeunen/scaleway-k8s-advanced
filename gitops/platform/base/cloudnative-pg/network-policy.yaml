@@ -10,6 +10,7 @@ spec:
   ingress:
     # K8s API server calls admission webhooks
     - fromEntities:
+        - kube-apiserver
         - host
         - remote-node
       toPorts:
@@ -30,6 +31,7 @@ spec:
               protocol: TCP
     # K8s API server (manages CNPG clusters)
     - toEntities:
+        - kube-apiserver
         - host
         - remote-node
       toPorts:
@@ -68,6 +70,7 @@ spec:
               protocol: TCP
     # K8s API server
     - toEntities:
+        - kube-apiserver
         - host
         - remote-node
       toPorts:

@@ -55,6 +55,7 @@ spec:
               protocol: TCP
     # K8s API server (pod discovery for log collection)
     - toEntities:
+        - kube-apiserver
         - host
         - remote-node
       toPorts:

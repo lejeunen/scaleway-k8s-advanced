@@ -93,6 +93,7 @@ spec:
               protocol: TCP
     # K8s API server (watches Gateway API resources)
     - toEntities:
+        - kube-apiserver
         - host
         - remote-node
       toPorts:

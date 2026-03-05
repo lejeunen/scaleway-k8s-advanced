@@ -132,6 +132,7 @@ spec:
               protocol: TCP
     # Scrape kubelet and apiserver (kube-system, via host network)
     - toEntities:
+        - kube-apiserver
         - host
         - remote-node
       toPorts:
@@ -214,6 +215,7 @@ spec:
               protocol: TCP
     # K8s API server (reads cluster state)
     - toEntities:
+        - kube-apiserver
         - host
         - remote-node
       toPorts:
@@ -253,6 +255,7 @@ spec:
               protocol: TCP
     # K8s API server (manages Prometheus/Alertmanager CRs)
     - toEntities:
+        - kube-apiserver
         - host
         - remote-node
       toPorts:

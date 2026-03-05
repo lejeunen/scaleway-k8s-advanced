@@ -21,6 +21,7 @@ spec:
               protocol: TCP
     # K8s API server
     - toEntities:
+        - kube-apiserver
         - host
         - remote-node
       toPorts:
@@ -51,6 +52,7 @@ spec:
               protocol: TCP
     # K8s API server
     - toEntities:
+        - kube-apiserver
         - host
         - remote-node
       toPorts:
@@ -81,6 +83,7 @@ spec:
               protocol: TCP
     # K8s API server
     - toEntities:
+        - kube-apiserver
         - host
         - remote-node
       toPorts:
