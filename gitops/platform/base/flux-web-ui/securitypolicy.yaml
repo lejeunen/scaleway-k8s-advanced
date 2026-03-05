@@ -19,6 +19,19 @@ spec:
       - openid
       - email
     cookieDomain: "scw.sovereigncloudwisdom.eu"
+    cookieNames:
+      idToken: "google-id-token"
+  jwt:
+    providers:
+      - name: google
+        issuer: "https://accounts.google.com"
+        audiences:
+          - "${GOOGLE_OIDC_CLIENT_ID}"
+        remoteJWKS:
+          uri: "https://www.googleapis.com/oauth2/v3/certs"
+        extractFrom:
+          cookies:
+            - "google-id-token"
   authorization:
     defaultAction: Deny
     rules:
@@ -26,7 +39,7 @@ spec:
         action: Allow
         principal:
           jwt:
-            provider: oidc-google
+            provider: google
             claims:
               - name: email
                 values:
