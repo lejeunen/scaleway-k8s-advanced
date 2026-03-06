@@ -4,8 +4,4 @@ resources:
   - namespace.yaml
   - helmrepository.yaml
   - helmrelease.yaml
-  - gatewayclass.yaml
-  - envoyproxy.yaml
-  - clienttrafficpolicy.yaml
-  - gateway.yaml
   - network-policy.yaml

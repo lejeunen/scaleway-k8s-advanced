@@ -3,4 +3,7 @@ kind: Kustomization
 resources:
   - ../base/cert-manager-issuer
   - ../base/crossplane-config
+  - ../base/envoy-gateway-config
   - ../base/external-secrets-store
+patches:
+  - path: envoy-gateway-patch.yaml
