@@ -98,12 +98,11 @@ spec:
     # Managed Kapsule API server calls admission webhooks
     - fromEntities:
         - kube-apiserver
-        - kube-apiserver
         - host
         - remote-node
       toPorts:
         - ports:
-            - port: "443"
+            - port: "10250"
               protocol: TCP
   egress:
     # DNS
@@ -119,7 +118,6 @@ spec:
               protocol: TCP
     # K8s API server
     - toEntities:
-        - kube-apiserver
         - kube-apiserver
         - host
         - remote-node

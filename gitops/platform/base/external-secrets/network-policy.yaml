@@ -77,14 +77,14 @@ spec:
     matchLabels:
       app.kubernetes.io/name: external-secrets-webhook
   ingress:
-    # K8s API server calls admission webhooks
+    # K8s API server calls admission webhooks (container port, not service port)
     - fromEntities:
         - kube-apiserver
         - host
         - remote-node
       toPorts:
         - ports:
-            - port: "443"
+            - port: "10250"
               protocol: TCP
   egress:
     # DNS
