@@ -15,3 +15,6 @@ spec:
   path: ./gitops/system/base/kube-prometheus-stack
   prune: true
   wait: true
+  postBuild:
+    substitute:
+      GOOGLE_OIDC_CLIENT_ID: ${GOOGLE_OIDC_CLIENT_ID}

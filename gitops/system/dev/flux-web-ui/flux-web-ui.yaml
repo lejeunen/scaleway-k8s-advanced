@@ -13,3 +13,6 @@ spec:
     name: flux-system
   path: ./gitops/system/base/flux-web-ui
   prune: true
+  postBuild:
+    substitute:
+      GOOGLE_OIDC_CLIENT_ID: ${GOOGLE_OIDC_CLIENT_ID}

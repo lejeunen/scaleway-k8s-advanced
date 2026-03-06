@@ -13,3 +13,7 @@ spec:
   path: ./gitops/system/base/crossplane-infra
   prune: true
   wait: true
+  postBuild:
+    substitute:
+      CLUSTER_NAME: ${CLUSTER_NAME}
+      SCW_REGION: ${SCW_REGION}

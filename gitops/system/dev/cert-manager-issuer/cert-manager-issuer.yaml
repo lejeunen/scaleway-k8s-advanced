@@ -14,3 +14,6 @@ spec:
   path: ./gitops/system/base/cert-manager-issuer
   prune: true
   wait: true
+  postBuild:
+    substitute:
+      ACME_EMAIL: ${ACME_EMAIL}

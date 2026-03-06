@@ -13,3 +13,6 @@ spec:
   path: ./gitops/system/base/external-dns
   prune: true
   wait: true
+  postBuild:
+    substitute:
+      CLUSTER_NAME: ${CLUSTER_NAME}
