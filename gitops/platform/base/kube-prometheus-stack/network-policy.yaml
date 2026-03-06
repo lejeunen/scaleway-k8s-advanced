@@ -54,8 +54,8 @@ spec:
             - port: "3200"
               protocol: TCP
     # Scaleway Cockpit (external datasources)
-    - toFQDNs:
-        - matchPattern: "*.cockpit.fr-par.scw.cloud"
+    - toCIDRSet:
+        - cidr: "0.0.0.0/0"
       toPorts:
         - ports:
             - port: "443"

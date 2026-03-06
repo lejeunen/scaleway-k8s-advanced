@@ -29,8 +29,8 @@ spec:
             - port: "6443"
               protocol: TCP
     # Scaleway DNS API
-    - toFQDNs:
-        - matchName: "api.scaleway.com"
+    - toCIDRSet:
+        - cidr: "51.159.62.140/32"
       toPorts:
         - ports:
             - port: "443"

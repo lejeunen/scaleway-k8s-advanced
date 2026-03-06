@@ -60,11 +60,9 @@ spec:
         - ports:
             - port: "9080"
               protocol: TCP
-    # Google OIDC (token validation, JWKS fetch)
-    - toFQDNs:
-        - matchName: "accounts.google.com"
-        - matchName: "www.googleapis.com"
-        - matchName: "oauth2.googleapis.com"
+    # Google OIDC (token validation, JWKS fetch - CDN IPs, can't pin)
+    - toCIDRSet:
+        - cidr: "0.0.0.0/0"
       toPorts:
         - ports:
             - port: "443"

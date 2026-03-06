@@ -46,9 +46,9 @@ spec:
         - ports:
             - port: "3306"
               protocol: TCP
-    # GeoIP database download (init container)
-    - toFQDNs:
-        - matchName: "download.db-ip.com"
+    # GeoIP database download (init container - CDN IP, can't pin)
+    - toCIDRSet:
+        - cidr: "0.0.0.0/0"
       toPorts:
         - ports:
             - port: "443"

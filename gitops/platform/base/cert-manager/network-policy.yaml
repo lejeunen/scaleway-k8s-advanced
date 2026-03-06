@@ -39,8 +39,8 @@ spec:
             - port: "6443"
               protocol: TCP
     # Let's Encrypt ACME
-    - toFQDNs:
-        - matchName: "acme-v02.api.letsencrypt.org"
+    - toCIDRSet:
+        - cidr: "0.0.0.0/0"
       toPorts:
         - ports:
             - port: "443"
@@ -159,8 +159,8 @@ spec:
             - port: "53"
               protocol: TCP
     # Scaleway DNS API
-    - toFQDNs:
-        - matchName: "api.scaleway.com"
+    - toCIDRSet:
+        - cidr: "51.159.62.140/32"
       toPorts:
         - ports:
             - port: "443"

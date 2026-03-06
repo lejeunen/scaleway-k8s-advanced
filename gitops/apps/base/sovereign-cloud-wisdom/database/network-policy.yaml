@@ -29,8 +29,8 @@ spec:
             - port: "53"
               protocol: TCP
     # S3 backups to Scaleway Object Storage (barman-cloud)
-    - toFQDNs:
-        - matchPattern: "*.scw.cloud"
+    - toCIDRSet:
+        - cidr: "0.0.0.0/0"
       toPorts:
         - ports:
             - port: "443"
