@@ -5,7 +5,8 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
-    - name: crossplane
+    - name: envoy-gateway-config
+    - name: crossplane-infra
   interval: 10m
   sourceRef:
     kind: GitRepository
