@@ -1,0 +1,16 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: scaleway-certmanager-webhook-apiserver
+  namespace: cert-manager
+spec:
+  endpointSelector:
+    matchLabels:
+      app: scaleway-certmanager-webhook
+  egress:
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
