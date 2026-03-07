@@ -38,6 +38,14 @@ spec:
         - ports:
             - port: "6443"
               protocol: TCP
+    # barman-cloud plugin (backup orchestration)
+    - toEndpoints:
+        - matchLabels:
+            app: barman-cloud
+      toPorts:
+        - ports:
+            - port: "9090"
+              protocol: TCP
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
