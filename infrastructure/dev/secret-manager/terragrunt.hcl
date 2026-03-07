@@ -83,8 +83,8 @@ inputs = {
     "jeanne-matrix-credentials" = {
       description = "Matrix credentials for OpenClaw agent Jeanne"
       data = jsonencode({
-        "MATRIX_USER_ID"  = "@jeanne:sovereigncloudwisdom.eu"
-        "MATRIX_PASSWORD" = get_env("JEANNE_MATRIX_PASSWORD")
+        "MATRIX_USER_ID"      = "@jeanne:sovereigncloudwisdom.eu"
+        "MATRIX_ACCESS_TOKEN" = get_env("JEANNE_MATRIX_ACCESS_TOKEN")
       })
     }
   }
