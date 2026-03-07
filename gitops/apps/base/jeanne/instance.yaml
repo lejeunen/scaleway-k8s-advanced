@@ -1,0 +1,146 @@
+apiVersion: openclaw.rocks/v1alpha1
+kind: OpenClawInstance
+metadata:
+  name: jeanne
+  namespace: openclaw
+spec:
+  image:
+    tag: "2026.3.2"
+  envFrom:
+    - secretRef:
+        name: mistral-api-credentials
+    - secretRef:
+        name: jeanne-matrix-credentials
+  env:
+    - name: KUBECONFIG
+      value: /home/openclaw/.openclaw/.kube/config
+  skills:
+    - "npm:kubernetes-mcp-server"
+  config:
+    raw:
+      agents:
+        defaults:
+          model:
+            primary: "mistral/devstral-2-2512"
+          sandbox:
+            mode: "off"
+          compaction:
+            mode: "safeguard"
+            keepRecentTokens: 40000
+            reserveTokens: 80000
+            memoryFlush:
+              enabled: true
+              softThresholdTokens: 10000
+          contextPruning:
+            mode: "cache-ttl"
+            ttl: "1h"
+          heartbeat:
+            every: "55m"
+            target: "matrix"
+            activeHours:
+              start: "07:00"
+              end: "22:00"
+              timezone: "Europe/Brussels"
+          bootstrapMaxChars: 16000
+          bootstrapTotalMaxChars: 120000
+      channels:
+        matrix:
+          enabled: true
+          homeserver: "https://matrix.scw.sovereigncloudwisdom.eu"
+          encryption: false
+          dm:
+            policy: "allowlist"
+            allowFrom:
+              - "@nicolas:sovereigncloudwisdom.eu"
+          groupPolicy: "allowlist"
+          groupAllowFrom:
+            - "@nicolas:sovereigncloudwisdom.eu"
+          threadReplies: "inbound"
+      gateway:
+        trustedProxies:
+          - "10.0.0.0/8"
+          - "172.16.0.0/12"
+  runtimeDeps:
+    pnpm: true
+  initContainers:
+    - name: init-tools
+      image: ghcr.io/openclaw/openclaw:2026.3.2
+      command:
+        - sh
+        - -c
+        - |
+          set -eu
+          BIN="/home/openclaw/.openclaw/.local/bin"
+          mkdir -p "$${BIN}"
+
+          arch="$$(uname -m)"
+          [ "$${arch}" = "x86_64" ] && arch="amd64"
+          [ "$${arch}" = "aarch64" ] && arch="arm64"
+
+          # Download tools only if missing (PVC is persistent)
+          fetch() {
+            dest="$${BIN}/$1"
+            [ -x "$${dest}" ] && return 0
+            curl -fsSL "$2" -o "$${dest}"
+            chmod 0755 "$${dest}"
+          }
+
+          fetch kubectl "https://dl.k8s.io/release/v1.33.6/bin/linux/$${arch}/kubectl"
+
+          # Generate kubeconfig for in-cluster access via projected SA token
+          mkdir -p /home/openclaw/.openclaw/.kube
+          cat > /home/openclaw/.openclaw/.kube/config <<'KUBECONF'
+          apiVersion: v1
+          kind: Config
+          current-context: local
+          clusters:
+            - name: local
+              cluster:
+                server: https://kubernetes.default.svc
+                certificate-authority: /var/run/secrets/kubernetes.io/k8s-api/ca.crt
+          users:
+            - name: jeanne
+              user:
+                tokenFile: /var/run/secrets/kubernetes.io/k8s-api/token
+          contexts:
+            - name: local
+              context:
+                cluster: local
+                user: jeanne
+                namespace: openclaw
+          KUBECONF
+          chmod 0600 /home/openclaw/.openclaw/.kube/config
+      volumeMounts:
+        - name: data
+          mountPath: /home/openclaw/.openclaw
+
+  storage:
+    persistence:
+      enabled: true
+      size: 5Gi
+  extraVolumes:
+    - name: k8s-api-token
+      projected:
+        sources:
+          - serviceAccountToken:
+              path: token
+              expirationSeconds: 3600
+          - configMap:
+              name: kube-root-ca.crt
+              items:
+                - key: ca.crt
+                  path: ca.crt
+          - downwardAPI:
+              items:
+                - path: namespace
+                  fieldRef:
+                    fieldPath: metadata.namespace
+  extraVolumeMounts:
+    - name: k8s-api-token
+      mountPath: /var/run/secrets/kubernetes.io/k8s-api
+      readOnly: true
+  security:
+    networkPolicy:
+      enabled: false
+    rbac:
+      createServiceAccount: false

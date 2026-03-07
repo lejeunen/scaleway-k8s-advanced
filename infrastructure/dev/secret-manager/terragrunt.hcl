@@ -74,5 +74,18 @@ inputs = {
         }
       })
     }
+    "mistral-api-credentials" = {
+      description = "Mistral API key for OpenClaw agent Jeanne"
+      data = jsonencode({
+        "MISTRAL_API_KEY" = get_env("MISTRAL_API_KEY")
+      })
+    }
+    "jeanne-matrix-credentials" = {
+      description = "Matrix credentials for OpenClaw agent Jeanne"
+      data = jsonencode({
+        "MATRIX_USER_ID"  = "@jeanne:sovereigncloudwisdom.eu"
+        "MATRIX_PASSWORD" = get_env("JEANNE_MATRIX_PASSWORD")
+      })
+    }
   }
 }

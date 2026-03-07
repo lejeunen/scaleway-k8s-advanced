@@ -1,0 +1,12 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: openclaw-jeanne-readonly
+subjects:
+  - kind: ServiceAccount
+    name: jeanne
+    namespace: openclaw
+roleRef:
+  kind: ClusterRole
+  name: openclaw-jeanne-readonly
+  apiGroup: rbac.authorization.k8s.io
