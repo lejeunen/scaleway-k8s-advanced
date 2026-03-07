@@ -21,7 +21,7 @@ spec:
       agents:
         defaults:
           model:
-            primary: "mistral/devstral-2-2512"
+            primary: "mistral/devstral-2512"
           sandbox:
             mode: "off"
           compaction:
