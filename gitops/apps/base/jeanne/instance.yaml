@@ -47,7 +47,7 @@ spec:
         matrix:
           enabled: true
           homeserver: "http://matrix-stack-synapse-main.matrix.svc.cluster.local:8008"
-          encryption: false
+          encryption: true
           dm:
             policy: "open"
           groupPolicy: "open"
