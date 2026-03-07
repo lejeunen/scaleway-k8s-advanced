@@ -49,13 +49,9 @@ spec:
           homeserver: "http://matrix-stack-synapse-main.matrix.svc.cluster.local:8008"
           encryption: false
           dm:
-            policy: "allowlist"
-            allowFrom:
-              - "@nicolas:sovereigncloudwisdom.eu"
-          groupPolicy: "allowlist"
-          groupAllowFrom:
-            - "@nicolas:sovereigncloudwisdom.eu"
-          threadReplies: "inbound"
+            policy: "open"
+          groupPolicy: "open"
+          threadReplies: "off"
       gateway:
         trustedProxies:
           - "10.0.0.0/8"
