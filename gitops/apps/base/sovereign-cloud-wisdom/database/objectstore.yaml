@@ -5,7 +5,7 @@ metadata:
   namespace: wisdom
 spec:
   configuration:
-    destinationPath: s3://scw-k8s-advanced-${CLUSTER_NAME}-cnpg-backups/
+    destinationPath: s3://scw-k8s-advanced-${CLUSTER_NAME}-cnpg-backups-v2/
     endpointURL: https://s3.${SCW_REGION}.scw.cloud
     s3Credentials:
       accessKeyId:
