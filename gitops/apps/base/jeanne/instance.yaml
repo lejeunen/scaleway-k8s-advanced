@@ -23,6 +23,7 @@ spec:
     - "npm:music-metadata@^11.12.1"
     - "npm:zod@^4.3.6"
     - "npm:@matrix-org/matrix-sdk-crypto-nodejs@^0.4.0"
+    - "npm:@matrix-org/matrix-sdk-crypto-nodejs-linux-x64-gnu@^0.4.0"
   config:
     raw:
       agents:
