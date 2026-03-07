@@ -24,7 +24,7 @@ spec:
 
   plugins:
     - name: barman-cloud.cloudnative-pg.io
-      isWALPlugin: true
+      isWALArchiver: true
       parameters:
         barmanObjectName: matrix-backup-store
 
