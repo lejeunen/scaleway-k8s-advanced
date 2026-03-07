@@ -2,7 +2,7 @@ apiVersion: openclaw.rocks/v1alpha1
 kind: OpenClawInstance
 metadata:
   name: jeanne
-  namespace: openclaw
+  namespace: jeanne
 spec:
   image:
     tag: "2026.3.2"
@@ -114,7 +114,7 @@ spec:
               context:
                 cluster: in-cluster
                 user: service-account
-                namespace: openclaw
+                namespace: jeanne
           current-context: in-cluster
           EOF
           chmod 0600 "${config_path}"

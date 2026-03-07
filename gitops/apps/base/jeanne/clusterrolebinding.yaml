@@ -5,7 +5,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: jeanne
-    namespace: openclaw
+    namespace: jeanne
 roleRef:
   kind: ClusterRole
   name: openclaw-jeanne-readonly
