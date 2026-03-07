@@ -16,6 +16,7 @@ spec:
       value: /home/openclaw/.openclaw/.kube/config
   skills:
     - "npm:kubernetes-mcp-server"
+    - "npm:@openclaw/matrix"
   config:
     raw:
       agents:
@@ -63,6 +64,18 @@ spec:
   runtimeDeps:
     pnpm: true
   initContainers:
+    - name: init-matrix-plugin
+      image: ghcr.io/openclaw/openclaw:2026.3.1
+      command:
+        - sh
+        - -c
+        - |
+          set -eu
+          cd /home/openclaw/.openclaw
+          npm install @openclaw/matrix
+      volumeMounts:
+        - name: data
+          mountPath: /home/openclaw/.openclaw
     - name: init-tools
       image: ghcr.io/openclaw/openclaw:2026.3.1
       command:
