@@ -63,6 +63,11 @@ spec:
     matrixAuthenticationService:
       ingress:
         host: account.scw.sovereigncloudwisdom.eu
+      additional:
+        0-enable-passwords:
+          config: |
+            passwords:
+              enabled: true
       postgres:
         host: matrix-mas-rw
         port: 5432
