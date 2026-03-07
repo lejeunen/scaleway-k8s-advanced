@@ -14,6 +14,8 @@ spec:
   env:
     - name: KUBECONFIG
       value: /home/openclaw/.openclaw/.kube/config
+    - name: OPENCLAW_EXTENSIONS
+      value: "matrix"
   skills:
     - "npm:kubernetes-mcp-server"
   config:
@@ -63,18 +65,6 @@ spec:
   runtimeDeps:
     pnpm: true
   initContainers:
-    - name: init-matrix-plugin
-      image: ghcr.io/openclaw/openclaw:2026.3.1
-      command:
-        - sh
-        - -c
-        - |
-          set -eu
-          export HOME=/home/openclaw
-          openclaw plugins install @openclaw/matrix --no-interaction
-      volumeMounts:
-        - name: data
-          mountPath: /home/openclaw/.openclaw
     - name: init-tools
       image: ghcr.io/openclaw/openclaw:2026.3.1
       command:
