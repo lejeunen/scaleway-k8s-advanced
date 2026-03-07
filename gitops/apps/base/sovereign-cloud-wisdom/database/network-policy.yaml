@@ -28,10 +28,34 @@ spec:
               protocol: UDP
             - port: "53"
               protocol: TCP
+    # K8s API server (initdb job reads Cluster CR, CNPG instance manager)
+    - toEntities:
+        - kube-apiserver
+        - host
+        - remote-node
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP
+    - toCIDRSet:
+        - cidr: "10.32.0.1/32"
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
     # S3 backups to Scaleway Object Storage (barman-cloud)
     - toCIDRSet:
         - cidr: "0.0.0.0/0"
       toPorts:
         - ports:
             - port: "443"
+              protocol: TCP
+    # barman-cloud plugin (backup operations)
+    - toEndpoints:
+        - matchLabels:
+            app: barman-cloud
+            k8s:io.kubernetes.pod.namespace: cnpg-system
+      toPorts:
+        - ports:
+            - port: "9090"
               protocol: TCP
