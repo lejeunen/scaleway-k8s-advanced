@@ -71,19 +71,19 @@ spec:
         - |
           set -eu
           bin_dir="/home/openclaw/.openclaw/.local/bin"
-          kubectl_path="${bin_dir}/kubectl"
-          if [ -x "${kubectl_path}" ]; then
+          kubectl_path="$${bin_dir}/kubectl"
+          if [ -x "$${kubectl_path}" ]; then
             exit 0
           fi
-          mkdir -p "${bin_dir}"
-          arch="$(uname -m)"
-          case "${arch}" in
+          mkdir -p "$${bin_dir}"
+          arch="$$(uname -m)"
+          case "$${arch}" in
             x86_64) arch="amd64" ;;
             aarch64|arm64) arch="arm64" ;;
-            *) echo "unsupported architecture: ${arch}" >&2; exit 1 ;;
+            *) echo "unsupported architecture: $${arch}" >&2; exit 1 ;;
           esac
-          curl -fsSL "https://dl.k8s.io/release/v1.33.6/bin/linux/${arch}/kubectl" -o "${kubectl_path}"
-          chmod 0755 "${kubectl_path}"
+          curl -fsSL "https://dl.k8s.io/release/v1.33.6/bin/linux/$${arch}/kubectl" -o "$${kubectl_path}"
+          chmod 0755 "$${kubectl_path}"
       volumeMounts:
         - name: data
           mountPath: /home/openclaw/.openclaw
@@ -95,9 +95,9 @@ spec:
         - |
           set -eu
           kube_dir="/home/openclaw/.openclaw/.kube"
-          config_path="${kube_dir}/config"
-          mkdir -p "${kube_dir}"
-          cat > "${config_path}" <<'EOF'
+          config_path="$${kube_dir}/config"
+          mkdir -p "$${kube_dir}"
+          cat > "$${config_path}" <<'EOF'
           apiVersion: v1
           kind: Config
           clusters:
@@ -117,7 +117,7 @@ spec:
                 namespace: jeanne
           current-context: in-cluster
           EOF
-          chmod 0600 "${config_path}"
+          chmod 0600 "$${config_path}"
       volumeMounts:
         - name: data
           mountPath: /home/openclaw/.openclaw
