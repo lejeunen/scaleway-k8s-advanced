@@ -14,16 +14,8 @@ spec:
   env:
     - name: KUBECONFIG
       value: /home/openclaw/.openclaw/.kube/config
-    - name: NODE_PATH
-      value: "/home/openclaw/.openclaw/node_modules"
   skills:
     - "npm:kubernetes-mcp-server"
-    - "npm:@vector-im/matrix-bot-sdk@0.8.0-element.3"
-    - "npm:markdown-it@14.1.1"
-    - "npm:music-metadata@^11.12.1"
-    - "npm:zod@^4.3.6"
-    - "npm:@matrix-org/matrix-sdk-crypto-nodejs@^0.4.0"
-    - "npm:@matrix-org/matrix-sdk-crypto-nodejs-linux-x64-gnu@^0.4.0"
   config:
     raw:
       agents:
@@ -71,6 +63,18 @@ spec:
   runtimeDeps:
     pnpm: true
   initContainers:
+    - name: init-matrix-deps
+      image: ghcr.io/openclaw/openclaw:2026.3.1
+      command:
+        - sh
+        - -c
+        - |
+          set -eu
+          cd /app/extensions/matrix
+          npm install --production
+      volumeMounts:
+        - name: matrix-node-modules
+          mountPath: /app/extensions/matrix/node_modules
     - name: init-tools
       image: ghcr.io/openclaw/openclaw:2026.3.1
       command:
@@ -127,6 +131,8 @@ spec:
       enabled: true
       size: 5Gi
   extraVolumes:
+    - name: matrix-node-modules
+      emptyDir: {}
     - name: k8s-api-token
       projected:
         sources:
@@ -144,6 +150,8 @@ spec:
                   fieldRef:
                     fieldPath: metadata.namespace
   extraVolumeMounts:
+    - name: matrix-node-modules
+      mountPath: /app/extensions/matrix/node_modules
     - name: k8s-api-token
       mountPath: /var/run/secrets/kubernetes.io/k8s-api
       readOnly: true
