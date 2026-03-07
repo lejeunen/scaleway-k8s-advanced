@@ -16,7 +16,6 @@ spec:
       value: /home/openclaw/.openclaw/.kube/config
   skills:
     - "npm:kubernetes-mcp-server"
-    - "npm:@openclaw/matrix"
   config:
     raw:
       agents:
@@ -71,8 +70,8 @@ spec:
         - -c
         - |
           set -eu
-          cd /home/openclaw/.openclaw
-          npm install @openclaw/matrix
+          export HOME=/home/openclaw
+          openclaw plugins install @openclaw/matrix --no-interaction
       volumeMounts:
         - name: data
           mountPath: /home/openclaw/.openclaw
