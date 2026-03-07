@@ -111,3 +111,10 @@ spec:
         - ports:
             - port: "19001"
               protocol: TCP
+    # OIDC provider discovery (Google openid-configuration, JWKS)
+    - toEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
