@@ -1,0 +1,46 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: oidc-admin
+  namespace: matrix
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: matrix-admin
+  oidc:
+    provider:
+      issuer: "https://accounts.google.com"
+    clientID: "${GOOGLE_OIDC_CLIENT_ID}"
+    clientSecret:
+      name: "google-oidc-client-secret"
+    redirectURL: "https://admin-matrix.scw.sovereigncloudwisdom.eu/oauth2/callback"
+    scopes:
+      - openid
+      - email
+    cookieDomain: "scw.sovereigncloudwisdom.eu"
+    cookieNames:
+      idToken: "google-id-token"
+  jwt:
+    providers:
+      - name: google
+        issuer: "https://accounts.google.com"
+        audiences:
+          - "${GOOGLE_OIDC_CLIENT_ID}"
+        remoteJWKS:
+          uri: "https://www.googleapis.com/oauth2/v3/certs"
+        extractFrom:
+          cookies:
+            - "google-id-token"
+  authorization:
+    defaultAction: Deny
+    rules:
+      - name: allow-nicolas
+        action: Allow
+        principal:
+          jwt:
+            provider: google
+            claims:
+              - name: email
+                values:
+                  - "lejeune.n@gmail.com"

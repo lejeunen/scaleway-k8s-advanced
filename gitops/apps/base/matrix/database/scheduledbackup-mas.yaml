@@ -1,0 +1,14 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: matrix-mas-backup
+  namespace: matrix
+spec:
+  schedule: "0 0 0 * * *"
+  cluster:
+    name: matrix-mas
+  immediate: true
+  pluginConfiguration:
+    name: barman-cloud.cloudnative-pg.io
+    parameters:
+      barmanObjectName: matrix-backup-store

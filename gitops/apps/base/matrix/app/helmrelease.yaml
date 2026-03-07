@@ -1,0 +1,84 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: ess-helm
+  namespace: matrix
+spec:
+  type: oci
+  url: oci://ghcr.io/element-hq/ess-helm
+  interval: 1h
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: matrix-stack
+  namespace: matrix
+spec:
+  interval: 10m
+  timeout: 15m
+  chart:
+    spec:
+      chart: matrix-stack
+      version: "26.2.3"
+      sourceRef:
+        kind: HelmRepository
+        name: ess-helm
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+      remediateLastFailure: true
+  values:
+    serverName: sovereigncloudwisdom.eu
+
+    # Disable built-in PostgreSQL (using CNPG instead)
+    postgres:
+      enabled: false
+
+    # Disable Matrix RTC (video calls not needed for agent)
+    matrixRTC:
+      enabled: false
+
+    # Disable well-known delegation (deferred, Element Web configured directly)
+    wellKnownDelegation:
+      enabled: false
+
+    # Synapse configuration
+    synapse:
+      ingress:
+        host: matrix.scw.sovereigncloudwisdom.eu
+      postgres:
+        host: matrix-synapse-rw
+        port: 5432
+        user: app_admin
+        database: synapse
+        sslMode: require
+        password:
+          secret: matrix-synapse-app
+          secretKey: password
+
+    # Matrix Authentication Service
+    matrixAuthenticationService:
+      ingress:
+        host: account.scw.sovereigncloudwisdom.eu
+      postgres:
+        host: matrix-mas-rw
+        port: 5432
+        user: app_admin
+        database: mas
+        sslMode: require
+        password:
+          secret: matrix-mas-app
+          secretKey: password
+
+    # Element Web (routing via our HTTPRoutes, ingress host required by chart)
+    elementWeb:
+      ingress:
+        host: chat.scw.sovereigncloudwisdom.eu
+
+    # Element Admin
+    elementAdmin:
+      ingress:
+        host: admin-matrix.scw.sovereigncloudwisdom.eu

@@ -1,0 +1,35 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: matrix-mas
+  namespace: matrix
+spec:
+  instances: 1
+
+  bootstrap:
+    initdb:
+      database: mas
+      owner: app_admin
+      encoding: UTF8
+      localeCollate: C
+      localeCType: C
+
+  postgresql:
+    parameters:
+      shared_buffers: "32MB"
+      effective_cache_size: "64MB"
+
+  storage:
+    size: 1Gi
+
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      isWALPlugin: true
+      parameters:
+        barmanObjectName: matrix-backup-store
+
+  resources:
+    requests:
+      memory: 128Mi
+    limits:
+      memory: 256Mi
