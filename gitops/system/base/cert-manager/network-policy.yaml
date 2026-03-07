@@ -38,6 +38,15 @@ spec:
         - ports:
             - port: "6443"
               protocol: TCP
+    # DNS-01 challenge propagation check (authoritative DNS servers)
+    - toEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
     # Let's Encrypt ACME
     - toCIDRSet:
         - cidr: "0.0.0.0/0"
@@ -156,9 +165,9 @@ spec:
               protocol: UDP
             - port: "53"
               protocol: TCP
-    # Scaleway DNS API
-    - toCIDRSet:
-        - cidr: "51.159.62.140/32"
+    # Scaleway DNS API (multiple IPs)
+    - toEntities:
+        - world
       toPorts:
         - ports:
             - port: "443"
