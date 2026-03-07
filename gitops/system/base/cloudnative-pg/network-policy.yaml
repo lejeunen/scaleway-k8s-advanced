@@ -46,6 +46,13 @@ spec:
         - ports:
             - port: "9090"
               protocol: TCP
+    # CNPG instance status checks (cross-namespace)
+    - toEntities:
+        - cluster
+      toPorts:
+        - ports:
+            - port: "8000"
+              protocol: TCP
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy

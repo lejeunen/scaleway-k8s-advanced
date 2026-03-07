@@ -16,6 +16,17 @@ spec:
         - ports:
             - port: "5432"
               protocol: TCP
+    # CNPG operator status checks and management
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: cloudnative-pg
+            k8s:io.kubernetes.pod.namespace: cnpg-system
+      toPorts:
+        - ports:
+            - port: "8000"
+              protocol: TCP
+            - port: "5432"
+              protocol: TCP
   egress:
     # DNS resolution
     - toEndpoints:
