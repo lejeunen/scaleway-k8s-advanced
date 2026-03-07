@@ -5,7 +5,7 @@ metadata:
   namespace: jeanne
 spec:
   image:
-    tag: "2026.3.2"
+    tag: "2026.3.1"
   envFrom:
     - secretRef:
         name: mistral-api-credentials
@@ -64,7 +64,7 @@ spec:
     pnpm: true
   initContainers:
     - name: init-tools
-      image: ghcr.io/openclaw/openclaw:2026.3.2
+      image: ghcr.io/openclaw/openclaw:2026.3.1
       command:
         - sh
         - -c
