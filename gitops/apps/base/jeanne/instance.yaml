@@ -1,0 +1,153 @@
+apiVersion: openclaw.rocks/v1alpha1
+kind: OpenClawInstance
+metadata:
+  name: jeanne
+  namespace: openclaw
+spec:
+  image:
+    tag: "2026.3.2"
+  envFrom:
+    - secretRef:
+        name: mistral-api-credentials
+    - secretRef:
+        name: jeanne-matrix-credentials
+  env:
+    - name: KUBECONFIG
+      value: /home/openclaw/.openclaw/.kube/config
+  skills:
+    - "npm:kubernetes-mcp-server"
+  config:
+    raw:
+      agents:
+        defaults:
+          model:
+            primary: "mistral/devstral-2-2512"
+          sandbox:
+            mode: "off"
+          compaction:
+            mode: "safeguard"
+            keepRecentTokens: 40000
+            reserveTokens: 80000
+            memoryFlush:
+              enabled: true
+              softThresholdTokens: 10000
+          contextPruning:
+            mode: "cache-ttl"
+            ttl: "1h"
+          heartbeat:
+            every: "55m"
+            target: "matrix"
+            activeHours:
+              start: "07:00"
+              end: "22:00"
+              timezone: "Europe/Brussels"
+          bootstrapMaxChars: 16000
+          bootstrapTotalMaxChars: 120000
+      channels:
+        matrix:
+          enabled: true
+          homeserver: "https://matrix.scw.sovereigncloudwisdom.eu"
+          encryption: false
+          dm:
+            policy: "allowlist"
+            allowFrom:
+              - "@nicolas:sovereigncloudwisdom.eu"
+          groupPolicy: "allowlist"
+          groupAllowFrom:
+            - "@nicolas:sovereigncloudwisdom.eu"
+          threadReplies: "inbound"
+      gateway:
+        trustedProxies:
+          - "10.0.0.0/8"
+          - "172.16.0.0/12"
+  runtimeDeps:
+    pnpm: true
+  initContainers:
+    - name: init-kubectl
+      image: ghcr.io/openclaw/openclaw:2026.3.2
+      command:
+        - sh
+        - -c
+        - |
+          set -eu
+          bin_dir="/home/openclaw/.openclaw/.local/bin"
+          kubectl_path="${bin_dir}/kubectl"
+          if [ -x "${kubectl_path}" ]; then
+            exit 0
+          fi
+          mkdir -p "${bin_dir}"
+          arch="$(uname -m)"
+          case "${arch}" in
+            x86_64) arch="amd64" ;;
+            aarch64|arm64) arch="arm64" ;;
+            *) echo "unsupported architecture: ${arch}" >&2; exit 1 ;;
+          esac
+          curl -fsSL "https://dl.k8s.io/release/v1.33.6/bin/linux/${arch}/kubectl" -o "${kubectl_path}"
+          chmod 0755 "${kubectl_path}"
+      volumeMounts:
+        - name: data
+          mountPath: /home/openclaw/.openclaw
+    - name: init-kubeconfig
+      image: ghcr.io/openclaw/openclaw:2026.3.2
+      command:
+        - sh
+        - -c
+        - |
+          set -eu
+          kube_dir="/home/openclaw/.openclaw/.kube"
+          config_path="${kube_dir}/config"
+          mkdir -p "${kube_dir}"
+          cat > "${config_path}" <<'EOF'
+          apiVersion: v1
+          kind: Config
+          clusters:
+            - name: in-cluster
+              cluster:
+                server: https://kubernetes.default.svc
+                certificate-authority: /var/run/secrets/kubernetes.io/k8s-api/ca.crt
+          users:
+            - name: service-account
+              user:
+                tokenFile: /var/run/secrets/kubernetes.io/k8s-api/token
+          contexts:
+            - name: in-cluster
+              context:
+                cluster: in-cluster
+                user: service-account
+                namespace: openclaw
+          current-context: in-cluster
+          EOF
+          chmod 0600 "${config_path}"
+      volumeMounts:
+        - name: data
+          mountPath: /home/openclaw/.openclaw
+  storage:
+    persistence:
+      enabled: true
+      size: 5Gi
+  extraVolumes:
+    - name: k8s-api-token
+      projected:
+        sources:
+          - serviceAccountToken:
+              path: token
+              expirationSeconds: 3600
+          - configMap:
+              name: kube-root-ca.crt
+              items:
+                - key: ca.crt
+                  path: ca.crt
+          - downwardAPI:
+              items:
+                - path: namespace
+                  fieldRef:
+                    fieldPath: metadata.namespace
+  extraVolumeMounts:
+    - name: k8s-api-token
+      mountPath: /var/run/secrets/kubernetes.io/k8s-api
+      readOnly: true
+  security:
+    networkPolicy:
+      enabled: false
+    rbac:
+      createServiceAccount: false
