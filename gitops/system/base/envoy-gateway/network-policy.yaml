@@ -60,6 +60,16 @@ spec:
         - ports:
             - port: "9080"
               protocol: TCP
+    # xDS config stream from Envoy Gateway controller
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: gateway-helm
+      toPorts:
+        - ports:
+            - port: "18000"
+              protocol: TCP
+            - port: "18001"
+              protocol: TCP
     # Google OIDC (token validation, JWKS fetch - CDN IPs, can't pin)
     - toCIDRSet:
         - cidr: "0.0.0.0/0"
@@ -77,6 +87,17 @@ spec:
   endpointSelector:
     matchLabels:
       app.kubernetes.io/name: gateway-helm
+  ingress:
+    # xDS config stream from Envoy proxy
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: envoy
+      toPorts:
+        - ports:
+            - port: "18000"
+              protocol: TCP
+            - port: "18001"
+              protocol: TCP
   egress:
     # DNS
     - toEndpoints:
