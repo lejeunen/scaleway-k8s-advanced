@@ -27,37 +27,21 @@ spec:
               protocol: UDP
             - port: "53"
               protocol: TCP
-    # Backend services in all app/platform namespaces
-    - toEndpoints:
-        - matchLabels:
-            app.kubernetes.io/name: sovereign-cloud-wisdom
-            k8s:io.kubernetes.pod.namespace: wisdom
-      toPorts:
-        - ports:
-            - port: "8000"
-              protocol: TCP
-    - toEndpoints:
-        - matchLabels:
-            app: matomo
-            k8s:io.kubernetes.pod.namespace: matomo
+    # Backend services (all in-cluster pods routed via HTTPRoutes)
+    - toEntities:
+        - cluster
       toPorts:
         - ports:
             - port: "80"
               protocol: TCP
-    - toEndpoints:
-        - matchLabels:
-            app.kubernetes.io/name: grafana
-            k8s:io.kubernetes.pod.namespace: monitoring
-      toPorts:
-        - ports:
             - port: "3000"
               protocol: TCP
-    - toEndpoints:
-        - matchLabels:
-            app.kubernetes.io/name: flux-operator
-            k8s:io.kubernetes.pod.namespace: flux-system
-      toPorts:
-        - ports:
+            - port: "8000"
+              protocol: TCP
+            - port: "8008"
+              protocol: TCP
+            - port: "8080"
+              protocol: TCP
             - port: "9080"
               protocol: TCP
     # xDS config stream from Envoy Gateway controller
