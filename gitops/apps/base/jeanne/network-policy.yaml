@@ -2,7 +2,7 @@ apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
   name: jeanne
-  namespace: openclaw
+  namespace: jeanne
 spec:
   endpointSelector:
     matchLabels:
