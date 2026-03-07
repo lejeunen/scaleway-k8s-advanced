@@ -97,9 +97,9 @@ spec:
         - ports:
             - port: "6443"
               protocol: TCP
-    # Scaleway API (manages cloud resources)
-    - toCIDRSet:
-        - cidr: "51.159.62.140/32"
+    # Scaleway APIs (control plane + S3 + registry)
+    - toEntities:
+        - world
       toPorts:
         - ports:
             - port: "443"
