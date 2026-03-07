@@ -1,5 +1,6 @@
 resource "scaleway_k8s_cluster" "this" {
   name               = var.cluster_name
+  type               = var.cluster_type
   version            = var.k8s_version
   cni                = var.cni
   region             = var.region

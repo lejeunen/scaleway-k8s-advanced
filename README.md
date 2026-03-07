@@ -52,13 +52,12 @@ Each top-level directory is owned by a specific tool — you always know what ma
 | Directory | Managed by | Purpose |
 |-----------|------------|---------|
 | `infrastructure/` | Terraform/Terragrunt | Bootstrap: VPC, Kapsule cluster, Secret Manager |
-| `gitops/platform/` | Flux | Operators installed via HelmReleases |
-| `gitops/platform-config/` | Flux | CRD instances that configure operators (ClusterIssuer, ProviderConfig, ...) |
-| `gitops/crossplane/` | Crossplane | Cloud infrastructure resources (S3 buckets, Container Registry, ...) |
+| `gitops/system/base/` | Flux | Per-component manifests (HelmRelease, namespace, CRD instances) |
+| `gitops/system/dev/` | Flux | Per-component Flux Kustomizations with `dependsOn` DAG |
 | `gitops/apps/` | Flux | Application workloads |
-| `gitops/clusters/` | Flux | Per-environment Kustomization entrypoints and variable substitution |
+| `gitops/clusters/dev/` | Flux | Entry points (`system.yaml`, `apps.yaml`) and FluxInstance |
 
-Flux reconciliation order: **platform** → **platform-config** → **crossplane** → **apps**
+Flux reconciliation: per-component DAG (see `REFACTORING.md` for the full dependency graph)
 
 ## Key Design Decisions
 
@@ -70,7 +69,44 @@ Flux reconciliation order: **platform** → **platform-config** → **crossplane
 - **External Secrets over sealed-secrets** — ESO integrates with Scaleway's Secret Manager, keeping secrets out of git entirely rather than encrypting them in-repo. Terragrunt seeds the initial secrets; ESO syncs them into the cluster.
 - **Grafana Alloy over Promtail** — Alloy is Grafana's unified telemetry collector (successor to Promtail and Grafana Agent). A single DaemonSet collects logs today and will also collect traces when Tempo is added, eliminating the need for a separate OpenTelemetry Collector. Pragmatic choice: best integration with the Grafana stack (Loki, Tempo, Prometheus) while remaining open-source.
 - **Crossplane provider auto-install** — The Scaleway provider is installed via the Crossplane Helm chart's `provider.packages` value rather than a separate Provider CR. This avoids the kustomize dry-run problem (Provider CR is a CRD instance that needs the Crossplane CRDs to exist first) and keeps the three-phase pattern clean.
-- **Four-phase Flux reconciliation** — Operators (platform) → CRD instances like ClusterIssuer, ClusterSecretStore, ProviderConfig (platform-config) → Crossplane-managed cloud resources like S3 buckets and Container Registry (crossplane) → workloads (apps). Each phase `dependsOn` the previous one, avoiding Kustomize dry-run failures when CRDs don't exist yet. This "umbrella Kustomization per phase" is a deliberate simplification — at scale, each component would get its own Flux Kustomization with explicit per-component dependencies (DAG), trading readability for granular failure isolation and independent retries.
+- **Per-component DAG over monolithic phases** — Each system component (cert-manager, ESO, Envoy Gateway, Crossplane, etc.) gets its own Flux Kustomization with explicit `dependsOn` edges. This replaced an earlier 4-phase pattern that failed on fresh cluster bootstrap because kustomize dry-run rejects CRD instances when CRDs don't exist yet. The DAG gives independent failure isolation, per-component retries, and reliable from-scratch bootstrapping.
+
+## Bootstrap from Scratch
+
+```bash
+# 1. Infrastructure
+cd infrastructure/dev/vpc && terragrunt apply
+cd ../kapsule && terragrunt apply
+cd ../secret-manager && terragrunt apply
+
+# 2. Kubeconfig (KUBECONFIG is set via .env)
+cd infrastructure/dev/kapsule
+terragrunt output -json kubeconfig | jq -r '.[0].config_file' > ../.kubeconfig
+
+# 3. Bootstrap secret for External Secrets Operator
+kubectl create namespace external-secrets
+kubectl create secret generic scaleway-credentials -n external-secrets \
+  --from-literal=access-key=$SCW_ACCESS_KEY \
+  --from-literal=secret-key=$SCW_SECRET_KEY
+
+# 4. SSH deploy key for Flux
+ssh-keygen -t ed25519 -f flux-deploy-key -N "" -C "flux-dev"
+# Add the public key (flux-deploy-key.pub) to GitHub repo Settings > Deploy keys (read-only)
+kubectl create namespace flux-system
+kubectl create secret generic flux-system -n flux-system \
+  --from-file=identity=flux-deploy-key \
+  --from-file=identity.pub=flux-deploy-key.pub \
+  --from-literal=known_hosts="$(ssh-keyscan github.com 2>/dev/null)"
+
+# 5. Install Flux Operator
+helm install flux-operator oci://ghcr.io/controlplaneio-fluxcd/charts/flux-operator \
+  -n flux-system
+
+# 6. Apply FluxInstance (triggers full DAG reconciliation)
+kubectl apply -f gitops/clusters/dev/flux-instance.yaml
+```
+
+After step 6, Flux picks up `system.yaml` and `apps.yaml` from `gitops/clusters/dev/` and reconciles all components following the dependency graph.
 
 ## Prerequisites
 

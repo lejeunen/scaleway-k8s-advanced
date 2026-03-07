@@ -24,6 +24,7 @@ dependency "vpc" {
 
 inputs = {
   cluster_name                = local.env.locals.k8s_cluster_name
+  cluster_type                = local.env.locals.k8s_cluster_type
   k8s_version                 = local.env.locals.k8s_version
   cni                         = local.env.locals.k8s_cni
   private_network_id          = dependency.vpc.outputs.private_network_id

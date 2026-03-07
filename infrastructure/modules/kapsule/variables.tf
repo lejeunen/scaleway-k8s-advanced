@@ -3,6 +3,12 @@ variable "cluster_name" {
   type        = string
 }
 
+variable "cluster_type" {
+  description = "Cluster type: kapsule (shared), kapsule-dedicated-8, kapsule-dedicated-16"
+  type        = string
+  default     = "kapsule"
+}
+
 variable "k8s_version" {
   description = "Kubernetes version"
   type        = string
