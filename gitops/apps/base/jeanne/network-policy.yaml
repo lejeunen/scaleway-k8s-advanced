@@ -6,7 +6,7 @@ metadata:
 spec:
   endpointSelector:
     matchLabels:
-      openclaw.rocks/instance: jeanne
+      app.kubernetes.io/instance: jeanne
   egress:
     # DNS
     - toEndpoints:
@@ -42,4 +42,13 @@ spec:
       toPorts:
         - ports:
             - port: "8008"
+              protocol: TCP
+  ingress:
+    # Kubelet health probes
+    - fromEntities:
+        - host
+        - remote-node
+      toPorts:
+        - ports:
+            - port: "18790"
               protocol: TCP
