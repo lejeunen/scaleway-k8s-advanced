@@ -17,7 +17,7 @@ spec:
   values:
     image:
       repository: rg.fr-par.scw.cloud/sovereign-cloud-wisdom/sovereign-cloud-wisdom
-      tag: "20260303202217-823dc59" # {"$imagepolicy": "flux-system:sovereign-cloud-wisdom:tag"}
+      tag: "20260307020050-c4f0923" # {"$imagepolicy": "flux-system:sovereign-cloud-wisdom:tag"}
       pullSecret: sovereign-cloud-wisdom-registry
     database:
       secret: wisdom-db-app
