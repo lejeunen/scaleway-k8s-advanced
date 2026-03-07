@@ -51,7 +51,7 @@ spec:
           dm:
             policy: "open"
           groupPolicy: "open"
-          threadReplies: "off"
+          threadReplies: "inbound"
       gateway:
         trustedProxies:
           - "10.0.0.0/8"
