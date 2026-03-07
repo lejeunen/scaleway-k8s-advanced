@@ -14,10 +14,15 @@ spec:
   env:
     - name: KUBECONFIG
       value: /home/openclaw/.openclaw/.kube/config
-    - name: OPENCLAW_EXTENSIONS
-      value: "matrix"
+    - name: NODE_PATH
+      value: "/home/openclaw/.openclaw/node_modules"
   skills:
     - "npm:kubernetes-mcp-server"
+    - "npm:@vector-im/matrix-bot-sdk@0.8.0-element.3"
+    - "npm:markdown-it@14.1.1"
+    - "npm:music-metadata@^11.12.1"
+    - "npm:zod@^4.3.6"
+    - "npm:@matrix-org/matrix-sdk-crypto-nodejs@^0.4.0"
   config:
     raw:
       agents:
