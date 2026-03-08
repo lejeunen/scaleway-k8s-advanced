@@ -87,5 +87,13 @@ inputs = {
         "MATRIX_ACCESS_TOKEN" = get_env("JEANNE_MATRIX_ACCESS_TOKEN")
       })
     }
+    "openclaw-github-app" = {
+      description = "GitHub App credentials for OpenClaw agent Jeanne"
+      data = jsonencode({
+        "APP_ID"          = get_env("GITHUB_APP_ID")
+        "INSTALLATION_ID" = get_env("GITHUB_APP_INSTALLATION_ID")
+        "PRIVATE_KEY"     = get_env("GITHUB_APP_PRIVATE_KEY")
+      })
+    }
   }
 }

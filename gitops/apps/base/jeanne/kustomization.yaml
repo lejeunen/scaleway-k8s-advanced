@@ -4,6 +4,7 @@ resources:
   - namespace.yaml
   - externalsecret-mistral.yaml
   - externalsecret-matrix.yaml
+  - externalsecret-github.yaml
   - serviceaccount.yaml
   - clusterrole.yaml
   - clusterrolebinding.yaml

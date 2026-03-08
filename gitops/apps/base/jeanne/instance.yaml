@@ -11,6 +11,8 @@ spec:
         name: mistral-api-credentials
     - secretRef:
         name: jeanne-matrix-credentials
+    - secretRef:
+        name: jeanne-github-credentials
   env:
     - name: KUBECONFIG
       value: /home/openclaw/.openclaw/.kube/config
@@ -71,6 +73,104 @@ spec:
       volumeMounts:
         - name: matrix-node-modules
           mountPath: /app/extensions/matrix/node_modules
+    - name: init-github-credentials
+      image: ghcr.io/openclaw/openclaw:2026.3.1
+      command:
+        - sh
+        - -c
+        - |
+          set -eu
+          bin_dir="/home/openclaw/.openclaw/.local/bin"
+          mkdir -p "$${bin_dir}"
+
+          # Write private key from env var to file
+          key_path="/home/openclaw/.openclaw/.github-app-key.pem"
+          printf '%s' "$${GITHUB_APP_PRIVATE_KEY}" > "$${key_path}"
+          chmod 0600 "$${key_path}"
+
+          # Write Node.js credential helper for GitHub App JWT auth
+          cat > "$${bin_dir}/git-credential-github-app" <<'SCRIPT'
+          #!/usr/bin/env node
+          if (process.argv[2] !== 'get') process.exit(0);
+          const crypto = require('crypto');
+          const https = require('https');
+          const fs = require('fs');
+          const appId = process.env.GITHUB_APP_ID;
+          const installId = process.env.GITHUB_APP_INSTALLATION_ID;
+          const key = fs.readFileSync('/home/openclaw/.openclaw/.github-app-key.pem', 'utf8');
+          const now = Math.floor(Date.now() / 1000);
+          const h = Buffer.from(JSON.stringify({alg:'RS256',typ:'JWT'})).toString('base64url');
+          const p = Buffer.from(JSON.stringify({iss:appId,iat:now-60,exp:now+300})).toString('base64url');
+          const s = crypto.sign('sha256', Buffer.from(h+'.'+p), key).toString('base64url');
+          const jwt = h+'.'+p+'.'+s;
+          const req = https.request({
+            hostname: 'api.github.com',
+            path: '/app/installations/'+installId+'/access_tokens',
+            method: 'POST',
+            headers: {'Authorization':'Bearer '+jwt, 'Accept':'application/vnd.github+json', 'User-Agent':'jeanne-openclaw'}
+          }, (res) => {
+            let body = '';
+            res.on('data', d => body += d);
+            res.on('end', () => {
+              const token = JSON.parse(body).token;
+              if (!token) { process.stderr.write('Failed to get token: '+body+'\n'); process.exit(1); }
+              process.stdout.write('username=x-access-token\npassword='+token+'\n');
+            });
+          });
+          req.on('error', e => { process.stderr.write(e.message+'\n'); process.exit(1); });
+          req.end();
+          SCRIPT
+          chmod 0755 "$${bin_dir}/git-credential-github-app"
+
+          # Configure git to use the credential helper for github.com
+          git config --global credential."https://github.com".helper "$${bin_dir}/git-credential-github-app"
+          git config --global user.name "jeanne[bot]"
+          git config --global user.email "jeanne[bot]@users.noreply.github.com"
+
+          # Create gh wrapper that injects a fresh token on each call
+          cat > "$${bin_dir}/gh" <<'WRAPPER'
+          #!/bin/sh
+          token=$(printf 'protocol=https\nhost=github.com\n\n' | git credential fill | grep '^password=' | cut -d= -f2-)
+          GH_TOKEN="$token" exec /home/openclaw/.openclaw/.local/bin/gh-bin "$@"
+          WRAPPER
+          chmod 0755 "$${bin_dir}/gh"
+      env:
+        - name: GITHUB_APP_PRIVATE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: jeanne-github-credentials
+              key: GITHUB_APP_PRIVATE_KEY
+      volumeMounts:
+        - name: data
+          mountPath: /home/openclaw/.openclaw
+    - name: init-gh-cli
+      image: ghcr.io/openclaw/openclaw:2026.3.1
+      command:
+        - sh
+        - -c
+        - |
+          set -eu
+          bin_dir="/home/openclaw/.openclaw/.local/bin"
+          gh_path="$${bin_dir}/gh-bin"
+          if [ -x "$${gh_path}" ]; then
+            exit 0
+          fi
+          mkdir -p "$${bin_dir}"
+          arch="$$(uname -m)"
+          case "$${arch}" in
+            x86_64) arch="amd64" ;;
+            aarch64|arm64) arch="arm64" ;;
+            *) echo "unsupported architecture: $${arch}" >&2; exit 1 ;;
+          esac
+          tmp="$$(mktemp -d)"
+          curl -fsSL "https://github.com/cli/cli/releases/download/v2.87.3/gh_2.87.3_linux_$${arch}.tar.gz" -o "$${tmp}/gh.tar.gz"
+          tar -xzf "$${tmp}/gh.tar.gz" -C "$${tmp}"
+          cp "$${tmp}/gh_2.87.3_linux_$${arch}/bin/gh" "$${gh_path}"
+          chmod 0755 "$${gh_path}"
+          rm -rf "$${tmp}"
+      volumeMounts:
+        - name: data
+          mountPath: /home/openclaw/.openclaw
     - name: init-kubectl
       image: ghcr.io/openclaw/openclaw:2026.3.1
       command:
