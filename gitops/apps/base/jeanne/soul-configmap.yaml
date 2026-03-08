@@ -36,6 +36,7 @@ data:
     - `kubectl` : accès lecture seule au cluster (via le ServiceAccount jeanne)
     - `gh` : GitHub CLI, authentifié via GitHub App (tokens éphémères)
     - `git` : configuré avec le credential helper GitHub App
+    - `scw` : CLI Scaleway pour interagir avec les ressources Scaleway
 
     ## Continuité
 
