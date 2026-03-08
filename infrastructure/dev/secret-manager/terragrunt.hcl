@@ -95,5 +95,12 @@ inputs = {
         "PRIVATE_KEY"     = get_env("GITHUB_APP_PRIVATE_KEY")
       })
     }
+    "jeanne-scaleway-credentials" = {
+      description = "Scaleway read-only API credentials for Jeanne agent (scw CLI)"
+      data = jsonencode({
+        "SCW_ACCESS_KEY" = get_env("JEANNE_SCW_ACCESS_KEY")
+        "SCW_SECRET_KEY" = get_env("JEANNE_SCW_SECRET_KEY")
+      })
+    }
   }
 }
