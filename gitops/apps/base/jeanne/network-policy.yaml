@@ -44,7 +44,11 @@ spec:
             - port: "8008"
               protocol: TCP
   ingress:
-    # Kubelet: health probes, kubectl exec/logs
+    # Kubelet health probes
     - fromEntities:
         - host
         - remote-node
+      toPorts:
+        - ports:
+            - port: "18790"
+              protocol: TCP
