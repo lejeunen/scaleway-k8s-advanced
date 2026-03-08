@@ -8,6 +8,7 @@ resources:
   - serviceaccount.yaml
   - clusterrole.yaml
   - clusterrolebinding.yaml
+  - soul-configmap.yaml
   - instance.yaml
   - network-policy.yaml
   - configmap-soul.yaml

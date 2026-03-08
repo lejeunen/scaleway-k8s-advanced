@@ -242,6 +242,9 @@ spec:
   extraVolumes:
     - name: matrix-node-modules
       emptyDir: {}
+    - name: soul
+      configMap:
+        name: jeanne-soul
     - name: k8s-api-token
       projected:
         sources:
@@ -263,6 +266,10 @@ spec:
       mountPath: /app/extensions/matrix/node_modules
     - name: k8s-api-token
       mountPath: /var/run/secrets/kubernetes.io/k8s-api
+      readOnly: true
+    - name: soul
+      mountPath: /home/openclaw/.openclaw/SOUL.md
+      subPath: SOUL.md
       readOnly: true
   security:
     networkPolicy:
