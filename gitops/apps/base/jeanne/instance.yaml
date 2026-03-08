@@ -70,7 +70,9 @@ spec:
         - -c
         - |
           set -eu
-          cp /etc/jeanne-soul/SOUL.md /home/openclaw/.openclaw/SOUL.md
+          mkdir -p /home/openclaw/.openclaw/workspace
+          cp -f /etc/jeanne-soul/SOUL.md /home/openclaw/.openclaw/workspace/SOUL.md
+          rm -f /home/openclaw/.openclaw/SOUL.md
       volumeMounts:
         - name: data
           mountPath: /home/openclaw/.openclaw
