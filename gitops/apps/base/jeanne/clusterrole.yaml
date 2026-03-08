@@ -70,7 +70,11 @@ rules:
   - apiGroups: ["postgresql.cnpg.io"]
     resources: ["*"]
     verbs: ["get", "list", "watch"]
-  - apiGroups: ["*.scaleway.upbound.io"]
+  - apiGroups:
+      - object.scaleway.upbound.io
+      - rdb.scaleway.upbound.io
+      - registry.scaleway.upbound.io
+      - domain.scaleway.upbound.io
     resources: ["*"]
     verbs: ["get", "list", "watch"]
   - apiGroups: ["monitoring.coreos.com"]
