@@ -11,9 +11,13 @@ spec:
         name: mistral-api-credentials
     - secretRef:
         name: jeanne-matrix-credentials
+    - secretRef:
+        name: jeanne-github-credentials
   env:
     - name: KUBECONFIG
       value: /home/openclaw/.openclaw/.kube/config
+    - name: GIT_CONFIG_GLOBAL
+      value: /home/openclaw/.openclaw/.gitconfig
   skills:
     - "npm:kubernetes-mcp-server"
   config:
@@ -71,6 +75,79 @@ spec:
       volumeMounts:
         - name: matrix-node-modules
           mountPath: /app/extensions/matrix/node_modules
+    - name: init-github-credentials
+      image: ghcr.io/openclaw/openclaw:2026.3.1
+      command:
+        - sh
+        - -c
+        - |
+          set -eu
+          bin_dir="/home/openclaw/.openclaw/.local/bin"
+          mkdir -p "$${bin_dir}"
+
+          # Write private key from env var to file
+          key_path="/home/openclaw/.openclaw/.github-app-key.pem"
+          printf '%s' "$${GITHUB_APP_PRIVATE_KEY}" > "$${key_path}"
+          chmod 0600 "$${key_path}"
+
+          # Write shell credential helper for GitHub App JWT auth (openssl + curl)
+          cat > "$${bin_dir}/git-credential-github-app" <<'SCRIPT'
+          #!/bin/sh
+          [ "$1" != "get" ] && exit 0
+
+          key_file="/home/openclaw/.openclaw/.github-app-key.pem"
+          b64url() { openssl base64 -A | tr '+/' '-_' | tr -d '='; }
+
+          now=$(date +%s)
+          header=$(printf '{"alg":"RS256","typ":"JWT"}' | b64url)
+          payload=$(printf '{"iss":"%s","iat":%d,"exp":%d}' \
+            "$GITHUB_APP_ID" "$((now - 60))" "$((now + 300))" | b64url)
+          sig=$(printf '%s.%s' "$header" "$payload" \
+            | openssl dgst -sha256 -sign "$key_file" -binary | b64url)
+
+          response=$(curl -sf -X POST \
+            -H "Authorization: Bearer ${header}.${payload}.${sig}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "User-Agent: jeanne-sovereign-agent" \
+            "https://api.github.com/app/installations/${GITHUB_APP_INSTALLATION_ID}/access_tokens")
+
+          token=$(printf '%s' "$response" | grep -o '"token":"[^"]*"' | cut -d'"' -f4)
+          if [ -z "$token" ]; then
+            printf 'Failed to get token: %s\n' "$response" >&2
+            exit 1
+          fi
+          printf 'username=x-access-token\npassword=%s\n' "$token"
+          SCRIPT
+          chmod 0755 "$${bin_dir}/git-credential-github-app"
+
+          # Write gitconfig to persistent volume (not ephemeral $HOME/.gitconfig)
+          cat > /home/openclaw/.openclaw/.gitconfig <<GITCONF
+          [credential "https://github.com"]
+            helper = $${bin_dir}/git-credential-github-app
+          [user]
+            name = jeanne[bot]
+            email = jeanne[bot]@users.noreply.github.com
+          GITCONF
+
+          # Create gh wrapper that fetches a fresh token via the credential helper
+          cat > "$${bin_dir}/gh" <<'WRAPPER'
+          #!/bin/sh
+          cred=$(/home/openclaw/.openclaw/.local/bin/git-credential-github-app get)
+          GH_TOKEN=$(printf '%s' "$cred" | grep '^password=' | cut -d= -f2-)
+          export GH_TOKEN
+          exec /home/openclaw/.openclaw/.local/bin/gh-bin "$@"
+          WRAPPER
+          chmod 0755 "$${bin_dir}/gh"
+      env:
+        - name: GITHUB_APP_PRIVATE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: jeanne-github-credentials
+              key: GITHUB_APP_PRIVATE_KEY
+      volumeMounts:
+        - name: data
+          mountPath: /home/openclaw/.openclaw
+
     - name: init-tools
       image: ghcr.io/openclaw/openclaw:2026.3.1
       command:
@@ -94,6 +171,16 @@ spec:
           }
 
           fetch kubectl "https://dl.k8s.io/release/v1.33.6/bin/linux/$${arch}/kubectl"
+
+          # gh CLI ships as a tarball
+          if [ ! -x "$${BIN}/gh-bin" ]; then
+            tmp="$$(mktemp -d)"
+            curl -fsSL "https://github.com/cli/cli/releases/download/v2.87.3/gh_2.87.3_linux_$${arch}.tar.gz" \
+              | tar -xz -C "$${tmp}"
+            mv "$${tmp}/gh_2.87.3_linux_$${arch}/bin/gh" "$${BIN}/gh-bin"
+            chmod 0755 "$${BIN}/gh-bin"
+            rm -rf "$${tmp}"
+          fi
 
           # Generate kubeconfig for in-cluster access via projected SA token
           mkdir -p /home/openclaw/.openclaw/.kube
