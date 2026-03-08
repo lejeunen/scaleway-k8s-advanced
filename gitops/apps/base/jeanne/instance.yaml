@@ -63,6 +63,20 @@ spec:
   runtimeDeps:
     pnpm: true
   initContainers:
+    - name: init-soul
+      image: ghcr.io/openclaw/openclaw:2026.3.1
+      command:
+        - sh
+        - -c
+        - |
+          set -eu
+          cp /etc/jeanne-soul/SOUL.md /home/openclaw/.openclaw/SOUL.md
+      volumeMounts:
+        - name: data
+          mountPath: /home/openclaw/.openclaw
+        - name: soul
+          mountPath: /etc/jeanne-soul
+          readOnly: true
     - name: init-matrix-deps
       image: ghcr.io/openclaw/openclaw:2026.3.1
       command:
@@ -266,10 +280,6 @@ spec:
       mountPath: /app/extensions/matrix/node_modules
     - name: k8s-api-token
       mountPath: /var/run/secrets/kubernetes.io/k8s-api
-      readOnly: true
-    - name: soul
-      mountPath: /home/openclaw/.openclaw/SOUL.md
-      subPath: SOUL.md
       readOnly: true
   security:
     networkPolicy:
