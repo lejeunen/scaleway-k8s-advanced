@@ -13,11 +13,17 @@ spec:
         name: jeanne-matrix-credentials
     - secretRef:
         name: jeanne-github-credentials
+    - secretRef:
+        name: jeanne-scaleway-credentials
   env:
     - name: KUBECONFIG
       value: /home/openclaw/.openclaw/.kube/config
     - name: GIT_CONFIG_GLOBAL
       value: /home/openclaw/.openclaw/.gitconfig
+    - name: SCW_DEFAULT_PROJECT_ID
+      value: "${SCW_PROJECT_ID}"
+    - name: SCW_DEFAULT_REGION
+      value: "${SCW_REGION}"
   skills:
     - "npm:kubernetes-mcp-server"
   config:
@@ -187,6 +193,7 @@ spec:
           }
 
           fetch kubectl "https://dl.k8s.io/release/v1.33.6/bin/linux/$${arch}/kubectl"
+          fetch scw "https://github.com/scaleway/scaleway-cli/releases/download/v2.52.0/scaleway-cli_2.52.0_linux_$${arch}"
 
           # gh CLI ships as a tarball
           if [ ! -x "$${BIN}/gh-bin" ]; then
