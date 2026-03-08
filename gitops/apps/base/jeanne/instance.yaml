@@ -20,6 +20,8 @@ spec:
       value: /home/openclaw/.openclaw/.kube/config
     - name: GIT_CONFIG_GLOBAL
       value: /home/openclaw/.openclaw/.gitconfig
+    - name: SCW_DEFAULT_ORGANIZATION_ID
+      value: "${SCW_ORGANIZATION_ID}"
     - name: SCW_DEFAULT_PROJECT_ID
       value: "${SCW_PROJECT_ID}"
     - name: SCW_DEFAULT_REGION
