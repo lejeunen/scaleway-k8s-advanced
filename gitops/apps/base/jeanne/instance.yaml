@@ -13,11 +13,17 @@ spec:
         name: jeanne-matrix-credentials
     - secretRef:
         name: jeanne-github-credentials
+    - secretRef:
+        name: jeanne-scaleway-credentials
   env:
     - name: KUBECONFIG
       value: /home/openclaw/.openclaw/.kube/config
     - name: GIT_CONFIG_GLOBAL
       value: /home/openclaw/.openclaw/.gitconfig
+    - name: SCW_DEFAULT_PROJECT_ID
+      value: "${SCW_PROJECT_ID}"
+    - name: SCW_DEFAULT_REGION
+      value: "${SCW_REGION}"
   skills:
     - "npm:kubernetes-mcp-server"
   config:
@@ -190,6 +196,30 @@ spec:
           cp "$${tmp}/gh_2.87.3_linux_$${arch}/bin/gh" "$${gh_path}"
           chmod 0755 "$${gh_path}"
           rm -rf "$${tmp}"
+      volumeMounts:
+        - name: data
+          mountPath: /home/openclaw/.openclaw
+    - name: init-scw-cli
+      image: ghcr.io/openclaw/openclaw:2026.3.1
+      command:
+        - sh
+        - -c
+        - |
+          set -eu
+          bin_dir="/home/openclaw/.openclaw/.local/bin"
+          scw_path="$${bin_dir}/scw"
+          if [ -x "$${scw_path}" ]; then
+            exit 0
+          fi
+          mkdir -p "$${bin_dir}"
+          arch="$$(uname -m)"
+          case "$${arch}" in
+            x86_64) arch="amd64" ;;
+            aarch64|arm64) arch="arm64" ;;
+            *) echo "unsupported architecture: $${arch}" >&2; exit 1 ;;
+          esac
+          curl -fsSL "https://github.com/scaleway/scaleway-cli/releases/download/v2.52.0/scaleway-cli_2.52.0_linux_$${arch}" -o "$${scw_path}"
+          chmod 0755 "$${scw_path}"
       volumeMounts:
         - name: data
           mountPath: /home/openclaw/.openclaw

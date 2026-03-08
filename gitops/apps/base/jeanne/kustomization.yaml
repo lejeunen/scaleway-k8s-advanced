@@ -5,6 +5,7 @@ resources:
   - externalsecret-mistral.yaml
   - externalsecret-matrix.yaml
   - externalsecret-github.yaml
+  - externalsecret-scaleway.yaml
   - serviceaccount.yaml
   - clusterrole.yaml
   - clusterrolebinding.yaml
