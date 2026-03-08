@@ -28,7 +28,7 @@ spec:
         - ports:
             - port: "6443"
               protocol: TCP
-    # HTTPS egress (Mistral API)
+    # HTTPS egress (Mistral API and GitHub API)
     - toEntities:
         - world
       toPorts:
