@@ -16,6 +16,8 @@ spec:
   env:
     - name: KUBECONFIG
       value: /home/openclaw/.openclaw/.kube/config
+    - name: GIT_CONFIG_GLOBAL
+      value: /home/openclaw/.openclaw/.gitconfig
   skills:
     - "npm:kubernetes-mcp-server"
   config:
@@ -122,10 +124,14 @@ spec:
           SCRIPT
           chmod 0755 "$${bin_dir}/git-credential-github-app"
 
-          # Configure git to use the credential helper for github.com
-          git config --global credential."https://github.com".helper "$${bin_dir}/git-credential-github-app"
-          git config --global user.name "jeanne[bot]"
-          git config --global user.email "jeanne[bot]@users.noreply.github.com"
+          # Write gitconfig to persistent volume (not ephemeral $HOME/.gitconfig)
+          cat > /home/openclaw/.openclaw/.gitconfig <<GITCONF
+          [credential "https://github.com"]
+            helper = $${bin_dir}/git-credential-github-app
+          [user]
+            name = jeanne[bot]
+            email = jeanne[bot]@users.noreply.github.com
+          GITCONF
 
           # Create gh wrapper that injects a fresh token on each call
           cat > "$${bin_dir}/gh" <<'WRAPPER'
