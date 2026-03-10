@@ -69,7 +69,7 @@ spec:
             passwords:
               enabled: true
             account:
-              password_registration_enabled: true
+              password_registration_enabled: false
               password_registration_email_required: false
       postgres:
         host: matrix-mas-rw
