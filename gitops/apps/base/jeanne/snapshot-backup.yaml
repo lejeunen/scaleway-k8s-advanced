@@ -56,13 +56,13 @@ spec:
                 - -c
                 - |
                   set -e
-                  SNAP_NAME="jeanne-data-$(date +%Y%m%d-%H%M%S)"
-                  echo "Creating snapshot ${SNAP_NAME}..."
+                  SNAP_NAME="jeanne-data-$$(date +%Y%m%d-%H%M%S)"
+                  echo "Creating snapshot $${SNAP_NAME}..."
                   cat <<EOF | kubectl create -f -
                   apiVersion: snapshot.storage.k8s.io/v1
                   kind: VolumeSnapshot
                   metadata:
-                    name: ${SNAP_NAME}
+                    name: $${SNAP_NAME}
                     namespace: jeanne
                     labels:
                       app.kubernetes.io/name: jeanne-snapshot-backup
