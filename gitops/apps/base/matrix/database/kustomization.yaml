@@ -7,3 +7,4 @@ resources:
   - scheduledbackup-synapse.yaml
   - scheduledbackup-mas.yaml
   - externalsecret-s3.yaml
+  - network-policy.yaml

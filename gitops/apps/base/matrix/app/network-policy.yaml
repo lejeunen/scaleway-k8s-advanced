@@ -1,0 +1,287 @@
+---
+# HAProxy - internal reverse proxy for Synapse
+# matrix-stack-synapse service routes through HAProxy
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: matrix-haproxy
+  namespace: matrix
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: haproxy
+      app.kubernetes.io/part-of: matrix-stack
+  ingress:
+    # Envoy Gateway proxy (via matrix-stack-synapse service)
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: envoy
+            k8s:io.kubernetes.pod.namespace: envoy-gateway-system
+      toPorts:
+        - ports:
+            - port: "8008"
+              protocol: TCP
+    # MAS calling Synapse through HAProxy
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: matrix-authentication-service
+      toPorts:
+        - ports:
+            - port: "8008"
+              protocol: TCP
+    # Jeanne bot calling Synapse through HAProxy
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/instance: jeanne
+            k8s:io.kubernetes.pod.namespace: jeanne
+      toPorts:
+        - ports:
+            - port: "8008"
+              protocol: TCP
+  egress:
+    # DNS
+    - toEndpoints:
+        - matchLabels:
+            k8s-app: kube-dns
+            k8s:io.kubernetes.pod.namespace: kube-system
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    # Forward to Synapse main pod
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: synapse-main
+      toPorts:
+        - ports:
+            - port: "8008"
+              protocol: TCP
+---
+# Synapse - Matrix homeserver
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: matrix-synapse
+  namespace: matrix
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: synapse-main
+      app.kubernetes.io/part-of: matrix-stack
+  ingress:
+    # HAProxy forwarding requests
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: haproxy
+      toPorts:
+        - ports:
+            - port: "8008"
+              protocol: TCP
+    # MAS auth delegation (direct calls)
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: matrix-authentication-service
+      toPorts:
+        - ports:
+            - port: "8008"
+              protocol: TCP
+    # Prometheus metrics scraping
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: prometheus
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports:
+            - port: "9093"
+              protocol: TCP
+  egress:
+    # DNS
+    - toEndpoints:
+        - matchLabels:
+            k8s-app: kube-dns
+            k8s:io.kubernetes.pod.namespace: kube-system
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    # PostgreSQL (CNPG)
+    - toEndpoints:
+        - matchLabels:
+            cnpg.io/cluster: matrix-synapse
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+    # MAS (auth delegation)
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: matrix-authentication-service
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    # Matrix federation (server-to-server)
+    - toEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+            - port: "8448"
+              protocol: TCP
+---
+# Matrix Authentication Service (MAS)
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: matrix-mas
+  namespace: matrix
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: matrix-authentication-service
+      app.kubernetes.io/part-of: matrix-stack
+  ingress:
+    # Envoy Gateway proxy (account.scw.*)
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: envoy
+            k8s:io.kubernetes.pod.namespace: envoy-gateway-system
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    # Synapse calling MAS for auth
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: synapse-main
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    # HAProxy
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: haproxy
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+  egress:
+    # DNS
+    - toEndpoints:
+        - matchLabels:
+            k8s-app: kube-dns
+            k8s:io.kubernetes.pod.namespace: kube-system
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    # PostgreSQL (CNPG)
+    - toEndpoints:
+        - matchLabels:
+            cnpg.io/cluster: matrix-mas
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+    # Synapse admin API
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: synapse-main
+      toPorts:
+        - ports:
+            - port: "8008"
+              protocol: TCP
+    # Google OIDC (token exchange, JWKS)
+    - toEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+---
+# Element Web - static frontend
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: matrix-element-web
+  namespace: matrix
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: element-web
+      app.kubernetes.io/part-of: matrix-stack
+  ingress:
+    # Envoy Gateway proxy (chat.scw.*)
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: envoy
+            k8s:io.kubernetes.pod.namespace: envoy-gateway-system
+      toPorts:
+        - ports:
+            - port: "80"
+              protocol: TCP
+  egress: []
+---
+# Element Admin - static frontend
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: matrix-element-admin
+  namespace: matrix
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: element-admin
+      app.kubernetes.io/part-of: matrix-stack
+  ingress:
+    # Envoy Gateway proxy (admin-matrix.scw.*)
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: envoy
+            k8s:io.kubernetes.pod.namespace: envoy-gateway-system
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+  egress: []
+---
+# Helm jobs (init-secrets, deployment-markers, synapse-check-config)
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: matrix-tools
+  namespace: matrix
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/component: matrix-tools
+      app.kubernetes.io/part-of: matrix-stack
+  egress:
+    # DNS
+    - toEndpoints:
+        - matchLabels:
+            k8s-app: kube-dns
+            k8s:io.kubernetes.pod.namespace: kube-system
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    # K8s API server (jobs read/write secrets and CRs)
+    - toEntities:
+        - kube-apiserver
+        - host
+        - remote-node
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP

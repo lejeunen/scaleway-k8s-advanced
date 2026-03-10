@@ -1,0 +1,148 @@
+---
+# CNPG cluster for Synapse
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: matrix-db-synapse
+  namespace: matrix
+spec:
+  endpointSelector:
+    matchLabels:
+      cnpg.io/cluster: matrix-synapse
+  ingress:
+    # Synapse app connections
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: synapse-main
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+    # CNPG operator management
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: cloudnative-pg
+            k8s:io.kubernetes.pod.namespace: cnpg-system
+      toPorts:
+        - ports:
+            - port: "8000"
+              protocol: TCP
+            - port: "5432"
+              protocol: TCP
+  egress:
+    # DNS
+    - toEndpoints:
+        - matchLabels:
+            k8s-app: kube-dns
+            k8s:io.kubernetes.pod.namespace: kube-system
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    # K8s API server (CNPG instance manager)
+    - toEntities:
+        - kube-apiserver
+        - host
+        - remote-node
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP
+    - toCIDRSet:
+        - cidr: "10.32.0.1/32"
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+    # S3 backups (barman-cloud via Scaleway Object Storage)
+    - toCIDRSet:
+        - cidr: "0.0.0.0/0"
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+    # barman-cloud plugin
+    - toEndpoints:
+        - matchLabels:
+            app: barman-cloud
+            k8s:io.kubernetes.pod.namespace: cnpg-system
+      toPorts:
+        - ports:
+            - port: "9090"
+              protocol: TCP
+---
+# CNPG cluster for MAS
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: matrix-db-mas
+  namespace: matrix
+spec:
+  endpointSelector:
+    matchLabels:
+      cnpg.io/cluster: matrix-mas
+  ingress:
+    # MAS app connections
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: matrix-authentication-service
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+    # CNPG operator management
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: cloudnative-pg
+            k8s:io.kubernetes.pod.namespace: cnpg-system
+      toPorts:
+        - ports:
+            - port: "8000"
+              protocol: TCP
+            - port: "5432"
+              protocol: TCP
+  egress:
+    # DNS
+    - toEndpoints:
+        - matchLabels:
+            k8s-app: kube-dns
+            k8s:io.kubernetes.pod.namespace: kube-system
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    # K8s API server (CNPG instance manager)
+    - toEntities:
+        - kube-apiserver
+        - host
+        - remote-node
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP
+    - toCIDRSet:
+        - cidr: "10.32.0.1/32"
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+    # S3 backups (barman-cloud via Scaleway Object Storage)
+    - toCIDRSet:
+        - cidr: "0.0.0.0/0"
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+    # barman-cloud plugin
+    - toEndpoints:
+        - matchLabels:
+            app: barman-cloud
+            k8s:io.kubernetes.pod.namespace: cnpg-system
+      toPorts:
+        - ports:
+            - port: "9090"
+              protocol: TCP
