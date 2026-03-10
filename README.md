@@ -19,18 +19,18 @@ Bootstrap a Kapsule cluster with Terraform/Terragrunt, then manage everything el
 │                     GitOps (FluxCD)                       │
 │          Declarative, git-driven reconciliation           │
 │                                                           │
-│  ┌────────────────┐  ┌───────────────┐                    │
-│  │    Platform    │  │ Observability │                    │
-│  │   Components   │  │     Stack     │                    │
-│  │                │  │               │                    │
-│  │ Envoy Gateway  │  │ Prometheus    │                    │
-│  │  (Gateway API) │  │ Grafana       │                    │
-│  │ cert-manager   │  │ Loki          │                    │
-│  │ External       │  │ Tempo         │                    │
-│  │   Secrets      │  │ Alloy         │                    │
-│  │ CloudNativePG  │  │               │                    │
-│  │ Crossplane     │  │               │                    │
-│  └────────────────┘  └───────────────┘                    │
+│  ┌────────────────┐  ┌───────────────┐  ┌──────────────┐  │
+│  │    Platform    │  │ Observability │  │ Applications │  │
+│  │   Components   │  │     Stack     │  │              │  │
+│  │                │  │               │  │ Matrix/      │  │
+│  │ Envoy Gateway  │  │ Prometheus    │  │  Element     │  │
+│  │  (Gateway API) │  │ Grafana       │  │ Matomo       │  │
+│  │ cert-manager   │  │ Loki          │  │ Sovereign    │  │
+│  │ External       │  │ Tempo         │  │  Cloud       │  │
+│  │   Secrets      │  │ Alloy         │  │  Wisdom      │  │
+│  │ CloudNativePG  │  │               │  │ Jeanne       │  │
+│  │ Crossplane     │  │               │  │  (AI agent)  │  │
+│  └────────────────┘  └───────────────┘  └──────────────┘  │
 ├───────────────────────────────────────────────────────────┤
 │                   Crossplane (Scaleway)                    │
 │           Cloud resources as Kubernetes CRs               │
@@ -158,19 +158,32 @@ Deploy [sovereign-cloud-wisdom](https://github.com/lejeunen/sovereign-cloud-wisd
 - [x] Flux image automation (ImageRepository + ImagePolicy + ImageUpdateAutomation, timestamp-SHA tags)
 - [x] API auth token via ExternalSecret
 
-### Phase 5 — Security Hardening 📋
+### Phase 5 — Sovereign Applications ✅
+Real workloads running entirely on sovereign infrastructure:
+- [x] Matomo analytics (raw manifests, MariaDB, GeoIP, OIDC-protected)
+- [x] Matrix homeserver (Element Server Suite: Synapse + MAS + Element Web + Element Admin)
+  - [x] 2 independent CNPG clusters (synapse + MAS), daily S3 backups
+  - [x] Google OIDC for Element Web and Element Admin
+  - [x] Federation enabled (port 443/8448)
+  - [x] `.well-known` delegation from starter-kit cluster
+- [x] Jeanne — autonomous DevOps agent (OpenClaw operator + Devstral on Matrix)
+  - [x] GitHub App integration for PR workflow
+  - [x] Read-only cluster RBAC (CiliumNetworkPolicy, Flux, CNPG, Crossplane, etc.)
+  - [x] Daily VolumeSnapshot backup of persistent memory (scw-snapshot-retain)
+
+### Phase 6 — Security Hardening 📋
 Defense in depth — perimeter, internal, access control and audit:
+- [x] Cilium NetworkPolicies (GitOps — per-namespace, all namespaces except flux-system)
+- [x] Pod Security Standards (GitOps — `enforce: baseline` + `warn: restricted` labels on all namespaces)
 - [ ] Kapsule API server allowed IPs (Crossplane `Acl` — restrict who can `kubectl` to the cluster)
 - [ ] Security groups on Kapsule node pool (Terraform — restrict inbound/outbound at instance level)
 - [ ] Edge Services WAF pipeline (Crossplane — OWASP CRS protection on public HTTP endpoints)
-- [x] Cilium NetworkPolicies (GitOps — default-deny per namespace, whitelist allowed pod-to-pod traffic)
-- [x] Pod Security Standards (GitOps — `enforce: baseline` + `warn: restricted` labels on all namespaces)
 - [ ] PodDisruptionBudgets (GitOps — protect workloads during Kapsule auto-upgrade node drains)
 - [ ] Envoy Gateway rate limiting (GitOps — `BackendTrafficPolicy` to throttle abusive clients at L7)
 - [ ] IAM least-privilege (Crossplane `Application` + `Policy` — scoped API keys per service instead of broad credentials)
 - [ ] Audit Trail (Scaleway console — cloud-level logging of all API actions for compliance)
 - [ ] RBAC hardening (namespace-scoped roles — relevant for multi-team production, optional for single-operator)
 
-### Phase 6 — CI/CD 📋
+### Phase 7 — CI/CD 📋
 - [ ] GitHub Actions pipeline (build, test, push image on commit)
 - [ ] OIDC federation with Scaleway (no stored credentials)
