@@ -91,6 +91,15 @@ spec:
         - ports:
             - port: "8008"
               protocol: TCP
+    # Jeanne bot (connects directly via matrix-stack-synapse-main service)
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/instance: jeanne
+            k8s:io.kubernetes.pod.namespace: jeanne
+      toPorts:
+        - ports:
+            - port: "8008"
+              protocol: TCP
     # Prometheus metrics scraping
     - fromEndpoints:
         - matchLabels:
