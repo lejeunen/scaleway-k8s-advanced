@@ -12,3 +12,7 @@ resources:
   - soul-configmap.yaml
   - instance.yaml
   - network-policy.yaml
+  - volumesnapshotclass.yaml
+  - volumesnapshot.yaml
+  - cronjob-snapshot.yaml
+  - configmap-snapshot.yaml

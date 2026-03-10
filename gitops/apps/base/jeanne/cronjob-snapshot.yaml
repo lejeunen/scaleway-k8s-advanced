@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: jeanne-data-snapshot-cronjob
+  namespace: jeanne
+  labels:
+    app.kubernetes.io/name: jeanne
+    app.kubernetes.io/instance: jeanne
+    app.kubernetes.io/managed-by: flux-operator
+spec:
+  schedule: "0 0 * * 0"  # Tous les dimanches à minuit (hebdomadaire)
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: snapshot
+            image: bitnami/kubectl:latest
+            command:
+            - /bin/sh
+            - -c
+            - |
+              # Créer un nouveau snapshot
+              kubectl create -f /tmp/volumesnapshot.yaml -n jeanne
+              # Supprimer les snapshots anciens (conserver seulement 3)
+              kubectl get volumesnapshot -n jeanne --sort-by=.metadata.creationTimestamp -o jsonpath='{.items[*].metadata.name}' | tr ' ' '\n' | tail -n +4 | xargs -I {} kubectl delete volumesnapshot {} -n jeanne --ignore-not-found
+            volumeMounts:
+            - name: snapshot-yaml
+              mountPath: /tmp/volumesnapshot.yaml
+              subPath: volumesnapshot.yaml
+          volumes:
+          - name: snapshot-yaml
+            configMap:
+              name: jeanne-data-snapshot-yaml
