@@ -50,13 +50,15 @@ spec:
               protocol: UDP
             - port: "53"
               protocol: TCP
-    # Forward to Synapse main pod
+    # Forward to Synapse main pod (8008 traffic + 8080 health checks)
     - toEndpoints:
         - matchLabels:
             app.kubernetes.io/name: synapse-main
       toPorts:
         - ports:
             - port: "8008"
+              protocol: TCP
+            - port: "8080"
               protocol: TCP
 ---
 # Synapse - Matrix homeserver
@@ -71,13 +73,15 @@ spec:
       app.kubernetes.io/name: synapse-main
       app.kubernetes.io/part-of: matrix-stack
   ingress:
-    # HAProxy forwarding requests
+    # HAProxy forwarding requests + health checks
     - fromEndpoints:
         - matchLabels:
             app.kubernetes.io/name: haproxy
       toPorts:
         - ports:
             - port: "8008"
+              protocol: TCP
+            - port: "8080"
               protocol: TCP
     # MAS auth delegation (direct calls)
     - fromEndpoints:
@@ -226,9 +230,8 @@ spec:
             k8s:io.kubernetes.pod.namespace: envoy-gateway-system
       toPorts:
         - ports:
-            - port: "80"
+            - port: "8080"
               protocol: TCP
-  egress: []
 ---
 # Element Admin - static frontend
 apiVersion: cilium.io/v2
@@ -251,7 +254,6 @@ spec:
         - ports:
             - port: "8080"
               protocol: TCP
-  egress: []
 ---
 # Helm jobs (init-secrets, deployment-markers, synapse-check-config)
 apiVersion: cilium.io/v2
