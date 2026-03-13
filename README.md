@@ -66,7 +66,7 @@ Flux reconciliation: per-component DAG (see `REFACTORING.md` for the full depend
 - **Terragrunt for bootstrap only** — Terraform/Terragrunt is the right tool for the initial chicken-and-egg problem (creating the cluster, seeding Secret Manager with credentials). After that, Crossplane takes over.
 - **Gateway API over Ingress** — The Kubernetes [Gateway API](https://gateway-api.sigs.k8s.io/) is the successor to the Ingress resource, offering weighted traffic splitting (canary deployments), header-based routing, and cross-namespace references. Since `ingress-nginx` reaches [end-of-life in March 2026](https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/), we use Gateway API from the start.
 - **Envoy Gateway as Gateway API implementation** — Kapsule's managed Cilium supports Gateway API upstream, but Scaleway does not expose the `gatewayAPI.enabled` flag on managed clusters (as of Feb 2026). Since the Cilium installation in `kube-system` is managed by Scaleway and may be overwritten during auto-upgrades, we deploy [Envoy Gateway](https://gateway.envoyproxy.io/) (the CNCF reference implementation) as a standalone controller. All routing manifests use the portable Gateway API spec — if Scaleway enables Cilium Gateway API in the future, the implementation can be swapped with zero changes to route definitions.
-- **External Secrets over sealed-secrets** — ESO integrates with Scaleway's Secret Manager, keeping secrets out of git entirely rather than encrypting them in-repo. Terragrunt seeds the initial secrets; ESO syncs them into the cluster.
+- **External Secrets over sealed-secrets** — ESO integrates with Scaleway's Secret Manager, keeping secrets out of git entirely rather than encrypting them in-repo. Terragrunt creates secret shells (name/description/tags); a dedicated script (`scripts/push-secrets.sh`) pushes sensitive values via the `scw` CLI, keeping them out of Terraform state. ESO syncs them into the cluster.
 - **Grafana Alloy over Promtail** — Alloy is Grafana's unified telemetry collector (successor to Promtail and Grafana Agent). A single DaemonSet collects logs today and will also collect traces when Tempo is added, eliminating the need for a separate OpenTelemetry Collector. Pragmatic choice: best integration with the Grafana stack (Loki, Tempo, Prometheus) while remaining open-source.
 - **Crossplane provider auto-install** — The Scaleway provider is installed via the Crossplane Helm chart's `provider.packages` value rather than a separate Provider CR. This avoids the kustomize dry-run problem (Provider CR is a CRD instance that needs the Crossplane CRDs to exist first) and keeps the three-phase pattern clean.
 - **Per-component DAG over monolithic phases** — Each system component (cert-manager, ESO, Envoy Gateway, Crossplane, etc.) gets its own Flux Kustomization with explicit `dependsOn` edges. This replaced an earlier 4-phase pattern that failed on fresh cluster bootstrap because kustomize dry-run rejects CRD instances when CRDs don't exist yet. The DAG gives independent failure isolation, per-component retries, and reliable from-scratch bootstrapping.
@@ -74,22 +74,25 @@ Flux reconciliation: per-component DAG (see `REFACTORING.md` for the full depend
 ## Bootstrap from Scratch
 
 ```bash
-# 1. Infrastructure
+# 1. Infrastructure (secret-manager creates shells only, no sensitive data in state)
 cd infrastructure/dev/vpc && terragrunt apply
 cd ../kapsule && terragrunt apply
 cd ../secret-manager && terragrunt apply
 
-# 2. Kubeconfig (KUBECONFIG is set via .env)
+# 2. Push secret values via scw CLI (bypasses Terraform state)
+source .env && ./scripts/push-secrets.sh
+
+# 3. Kubeconfig (KUBECONFIG is set via .env)
 cd infrastructure/dev/kapsule
 terragrunt output -json kubeconfig | jq -r '.[0].config_file' > ../.kubeconfig
 
-# 3. Bootstrap secret for External Secrets Operator
+# 4. Bootstrap secret for External Secrets Operator
 kubectl create namespace external-secrets
 kubectl create secret generic scaleway-credentials -n external-secrets \
   --from-literal=access-key=$SCW_ACCESS_KEY \
   --from-literal=secret-key=$SCW_SECRET_KEY
 
-# 4. SSH deploy key for Flux
+# 5. SSH deploy key for Flux
 ssh-keygen -t ed25519 -f flux-deploy-key -N "" -C "flux-dev"
 # Add the public key (flux-deploy-key.pub) to GitHub repo Settings > Deploy keys (read-only)
 kubectl create namespace flux-system
@@ -98,15 +101,15 @@ kubectl create secret generic flux-system -n flux-system \
   --from-file=identity.pub=flux-deploy-key.pub \
   --from-literal=known_hosts="$(ssh-keyscan github.com 2>/dev/null)"
 
-# 5. Install Flux Operator
+# 6. Install Flux Operator
 helm install flux-operator oci://ghcr.io/controlplaneio-fluxcd/charts/flux-operator \
   -n flux-system
 
-# 6. Apply FluxInstance (triggers full DAG reconciliation)
+# 7. Apply FluxInstance (triggers full DAG reconciliation)
 kubectl apply -f gitops/clusters/dev/flux-instance.yaml
 ```
 
-After step 6, Flux picks up `system.yaml` and `apps.yaml` from `gitops/clusters/dev/` and reconciles all components following the dependency graph.
+After step 7, Flux picks up `system.yaml` and `apps.yaml` from `gitops/clusters/dev/` and reconciles all components following the dependency graph.
 
 ## Prerequisites
 
@@ -125,7 +128,7 @@ Terragrunt-managed infrastructure to get a production-ready Kapsule cluster:
 - [x] Automatic K8s version upgrades (Sunday 3am maintenance window)
 - [x] PodSecurity enforcement via namespace labels (Kapsule enables the [PodSecurity admission controller](https://kubernetes.io/docs/concepts/security/pod-security-admission/) by default)
 - [x] Environment-aware safety: `delete_additional_resources` protects production from accidental resource deletion
-- [x] Secret Manager bootstrapping (Terragrunt seeds credentials consumed by ESO)
+- [x] Secret Manager bootstrapping (Terragrunt creates shells, `scripts/push-secrets.sh` pushes values via scw CLI)
 
 ### Phase 2 — GitOps ✅
 FluxCD bootstrap to manage all subsequent components declaratively:
