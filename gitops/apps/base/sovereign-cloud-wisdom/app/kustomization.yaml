@@ -9,3 +9,4 @@ resources:
   - externalsecret-matomo.yaml
   - externalsecret-api.yaml
   - network-policy.yaml
+  - httproute-redirect.yaml

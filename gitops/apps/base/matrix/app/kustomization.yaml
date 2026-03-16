@@ -10,3 +10,4 @@ resources:
   - securitypolicy-chat.yaml
   - securitypolicy-admin.yaml
   - network-policy.yaml
+  - well-known-matrix.yaml

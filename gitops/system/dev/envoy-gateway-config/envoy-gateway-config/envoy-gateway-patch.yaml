@@ -19,3 +19,15 @@ spec:
         certificateRefs:
           - kind: Secret
             name: scw-wildcard-tls
+    - name: https-root
+      protocol: HTTPS
+      port: 443
+      hostname: "sovereigncloudwisdom.eu"
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: root-domain-tls

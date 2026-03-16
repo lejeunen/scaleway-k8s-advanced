@@ -1,0 +1,67 @@
+# Matrix .well-known delegation
+#
+# Serves the discovery endpoints required by the Matrix protocol:
+#   - /.well-known/matrix/client  (tells clients where the homeserver is)
+#   - /.well-known/matrix/server  (tells other homeservers where to federate)
+#
+# The server name is sovereigncloudwisdom.eu but Synapse runs at
+# matrix.scw.sovereigncloudwisdom.eu. These responses bridge the two.
+
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: HTTPRouteFilter
+metadata:
+  name: well-known-matrix-client
+  namespace: envoy-gateway-system
+spec:
+  directResponse:
+    contentType: application/json
+    statusCode: 200
+    body:
+      type: Inline
+      inline: '{"m.homeserver": {"base_url": "https://matrix.scw.sovereigncloudwisdom.eu"}, "m.authentication": {"issuer": "https://account.scw.sovereigncloudwisdom.eu/"}}'
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: HTTPRouteFilter
+metadata:
+  name: well-known-matrix-server
+  namespace: envoy-gateway-system
+spec:
+  directResponse:
+    contentType: application/json
+    statusCode: 200
+    body:
+      type: Inline
+      inline: '{"m.server": "matrix.scw.sovereigncloudwisdom.eu:443"}'
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: well-known-matrix
+  namespace: envoy-gateway-system
+spec:
+  parentRefs:
+    - name: eg
+      sectionName: https-root
+  hostnames:
+    - sovereigncloudwisdom.eu
+  rules:
+    - matches:
+        - path:
+            type: Exact
+            value: /.well-known/matrix/client
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: gateway.envoyproxy.io
+            kind: HTTPRouteFilter
+            name: well-known-matrix-client
+    - matches:
+        - path:
+            type: Exact
+            value: /.well-known/matrix/server
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: gateway.envoyproxy.io
+            kind: HTTPRouteFilter
+            name: well-known-matrix-server
