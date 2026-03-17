@@ -185,6 +185,7 @@ Defense in depth - perimeter, internal, access control and audit:
 - [ ] Envoy Gateway rate limiting (GitOps - `BackendTrafficPolicy` to throttle abusive clients at L7)
 - [ ] IAM least-privilege (Crossplane `Application` + `Policy` - scoped API keys per service instead of broad credentials)
 - [ ] Audit Trail (Scaleway console - cloud-level logging of all API actions for compliance)
+- [ ] S3 bucket encryption SSE-ONE (Crossplane - AES-256 server-side encryption on all Object Storage buckets)
 - [ ] RBAC hardening (namespace-scoped roles - relevant for multi-team production, optional for single-operator)
 
 ### Phase 7 - CI/CD 📋
