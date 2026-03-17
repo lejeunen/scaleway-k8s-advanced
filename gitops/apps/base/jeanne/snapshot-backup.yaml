@@ -67,7 +67,7 @@ spec:
                     labels:
                       app.kubernetes.io/name: jeanne-snapshot-backup
                   spec:
-                    volumeSnapshotClassName: scw-snapshot-retain
+                    volumeSnapshotClassName: scw-snapshot
                     source:
                       persistentVolumeClaimName: jeanne-data
                   EOF
