@@ -47,7 +47,7 @@ spec:
             mode: "cache-ttl"
             ttl: "1h"
           heartbeat:
-            every: "55m"
+            every: "30m"
             target: "matrix"
             activeHours:
               start: "07:00"
