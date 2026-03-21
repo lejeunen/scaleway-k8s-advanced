@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: dashy
-          image: lissy93/dashy:3.1.1
+          image: lissy93/dashy:3.1.12
           ports:
             - containerPort: 8080
           resources:
