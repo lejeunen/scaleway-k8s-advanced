@@ -13,6 +13,15 @@ spec:
       labels:
         app: dashy
     spec:
+      initContainers:
+        - name: copy-config
+          image: busybox:1.37
+          command: ["cp", "/config/conf.yml", "/user-data/conf.yml"]
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: user-data
+              mountPath: /user-data
       containers:
         - name: dashy
           image: lissy93/dashy:3.1.12
@@ -24,13 +33,11 @@ spec:
             limits:
               memory: 2Gi
           volumeMounts:
-            - name: config
+            - name: user-data
               mountPath: /app/user-data
-              readOnly: true
       volumes:
         - name: config
           configMap:
             name: dashy-config
-            items:
-              - key: conf.yml
-                path: conf.yml
+        - name: user-data
+          emptyDir: {}
