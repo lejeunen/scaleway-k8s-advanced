@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dashy-config
+  namespace: dashy
+data:
+  conf.yml: |
+    pageInfo:
+      title: Sovereign Cloud Platform
+      description: Dev portal for scaleway-k8s-advanced
+    appConfig:
+      theme: dark
+      layout: auto
+      statusCheck: true
+      statusCheckInterval: 300
+    sections:
+      - name: Observability
+        icon: fas fa-chart-line
+        items:
+          - title: Grafana
+            description: Dashboards, metrics, logs, and traces
+            url: https://grafana.scw.sovereigncloudwisdom.eu
+            icon: hl-grafana
+            statusCheck: true
+            statusCheckUrl: http://kube-prometheus-stack-grafana.monitoring.svc.cluster.local:80
+          - title: Matomo
+            description: Web analytics (GDPR-compliant)
+            url: https://analytics.scw.sovereigncloudwisdom.eu
+            icon: hl-matomo
+            statusCheck: true
+            statusCheckUrl: http://matomo.matomo.svc.cluster.local:80
+      - name: GitOps
+        icon: fas fa-code-branch
+        items:
+          - title: Flux Web UI
+            description: FluxCD reconciliation status
+            url: https://flux.scw.sovereigncloudwisdom.eu
+            icon: hl-flux-cd
+            statusCheck: true
+            statusCheckUrl: http://flux-operator.flux-system.svc.cluster.local:8080
+      - name: Communication
+        icon: fas fa-comments
+        items:
+          - title: Element Web
+            description: Matrix chat client
+            url: https://chat.scw.sovereigncloudwisdom.eu
+            icon: hl-element
+            statusCheck: true
+            statusCheckUrl: http://matrix-stack-element-web.matrix.svc.cluster.local:80
+          - title: Element Admin
+            description: Matrix server administration
+            url: https://admin-matrix.scw.sovereigncloudwisdom.eu
+            icon: hl-element
+      - name: Applications
+        icon: fas fa-rocket
+        items:
+          - title: Sovereign Cloud Wisdom
+            description: Demo application on sovereign infrastructure
+            url: https://wisdom.scw.sovereigncloudwisdom.eu
+            icon: fas fa-cloud
+            statusCheck: true
+            statusCheckUrl: http://sovereign-cloud-wisdom.wisdom.svc.cluster.local:8080
+      - name: Infrastructure
+        icon: fas fa-server
+        items:
+          - title: Scaleway Console
+            description: Cloud provider management console
+            url: https://console.scaleway.com
+            icon: fas fa-cloud
+          - title: GitHub Repository
+            description: Source code and GitOps manifests
+            url: https://github.com/lejeunen/scaleway-k8s-advanced
+            icon: fab fa-github
