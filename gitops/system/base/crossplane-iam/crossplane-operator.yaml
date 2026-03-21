@@ -31,6 +31,9 @@ spec:
           - DomainsDNSFullAccess
         projectIds:
           - "${SCW_PROJECT_ID}"
+      - permissionSetNames:
+          - IAMManager
+        organizationId: "${SCW_ORGANIZATION_ID}"
     tags:
       - env=dev
       - managed-by=crossplane
