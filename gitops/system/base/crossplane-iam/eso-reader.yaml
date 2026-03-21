@@ -6,9 +6,10 @@ spec:
   forProvider:
     name: eso-reader
     description: "Scoped credentials for External Secrets Operator (Secret Manager read-only)"
+    organizationId: "${SCW_ORGANIZATION_ID}"
     tags:
-      - "env:dev"
-      - "managed-by:crossplane"
+      - env=dev
+      - managed-by=crossplane
   providerConfigRef:
     name: default
 ---
@@ -20,6 +21,7 @@ spec:
   forProvider:
     name: eso-reader
     description: "Secret Manager read-only access for ESO ClusterSecretStore"
+    organizationId: "${SCW_ORGANIZATION_ID}"
     applicationIdRef:
       name: eso-reader
     rule:
@@ -28,7 +30,7 @@ spec:
         projectIds:
           - "${SCW_PROJECT_ID}"
     tags:
-      - "env:dev"
-      - "managed-by:crossplane"
+      - env=dev
+      - managed-by=crossplane
   providerConfigRef:
     name: default

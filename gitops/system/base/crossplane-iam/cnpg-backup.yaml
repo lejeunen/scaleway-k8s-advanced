@@ -6,9 +6,10 @@ spec:
   forProvider:
     name: cnpg-backup
     description: "Scoped credentials for CNPG barman-cloud S3 backups"
+    organizationId: "${SCW_ORGANIZATION_ID}"
     tags:
-      - "env:dev"
-      - "managed-by:crossplane"
+      - env=dev
+      - managed-by=crossplane
   providerConfigRef:
     name: default
 ---
@@ -20,6 +21,7 @@ spec:
   forProvider:
     name: cnpg-backup
     description: "S3 read/write access for CNPG database backups"
+    organizationId: "${SCW_ORGANIZATION_ID}"
     applicationIdRef:
       name: cnpg-backup
     rule:
@@ -29,7 +31,7 @@ spec:
         projectIds:
           - "${SCW_PROJECT_ID}"
     tags:
-      - "env:dev"
-      - "managed-by:crossplane"
+      - env=dev
+      - managed-by=crossplane
   providerConfigRef:
     name: default

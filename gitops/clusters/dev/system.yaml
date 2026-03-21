@@ -14,6 +14,7 @@ spec:
   wait: true
   postBuild:
     substitute:
+      SCW_ORGANIZATION_ID: "b7b9a9bd-321d-4146-a793-ccb3d420d4c8"
       SCW_PROJECT_ID: "25485e2e-7a3a-40ae-8d0c-1496ef7c5e0f"
       SCW_REGION: "fr-par"
       CLUSTER_NAME: "dev"
