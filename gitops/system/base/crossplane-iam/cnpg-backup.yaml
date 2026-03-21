@@ -1,0 +1,35 @@
+apiVersion: iam.scaleway.upbound.io/v1alpha1
+kind: Application
+metadata:
+  name: cnpg-backup
+spec:
+  forProvider:
+    name: cnpg-backup
+    description: "Scoped credentials for CNPG barman-cloud S3 backups"
+    tags:
+      - "env:dev"
+      - "managed-by:crossplane"
+  providerConfigRef:
+    name: default
+---
+apiVersion: iam.scaleway.upbound.io/v1alpha1
+kind: Policy
+metadata:
+  name: cnpg-backup
+spec:
+  forProvider:
+    name: cnpg-backup
+    description: "S3 read/write access for CNPG database backups"
+    applicationIdRef:
+      name: cnpg-backup
+    rule:
+      - permissionSetNames:
+          - ObjectStorageObjectsWrite
+          - ObjectStorageBucketsRead
+        projectIds:
+          - "${SCW_PROJECT_ID}"
+    tags:
+      - "env:dev"
+      - "managed-by:crossplane"
+  providerConfigRef:
+    name: default

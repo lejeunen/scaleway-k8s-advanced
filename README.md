@@ -87,18 +87,20 @@ cd infrastructure/dev/vpc && terragrunt apply
 cd ../kapsule && terragrunt apply
 cd ../secret-manager && terragrunt apply
 
-# 2. Push secret values via scw CLI (bypasses Terraform state)
-source .env && ./scripts/push-secrets.sh
+# 2. Push non-IAM secret values via scw CLI (bypasses Terraform state)
+source .env && ./scripts/push-secrets.sh grafana-admin-credentials matomo-mariadb-credentials \
+  matomo-token-auth wisdom-api-auth-token wisdom-registry-credentials \
+  mistral-api-credentials jeanne-matrix-credentials openclaw-github-app jeanne-scaleway-credentials
 
 # 3. Kubeconfig (KUBECONFIG is set via .env)
 cd infrastructure/dev/kapsule
 terragrunt output -json kubeconfig | jq -r '.[0].config_file' > ../.kubeconfig
 
-# 4. Bootstrap secret for External Secrets Operator
+# 4. Bootstrap secret for External Secrets Operator (scoped to Secret Manager read-only)
 kubectl create namespace external-secrets
 kubectl create secret generic scaleway-credentials -n external-secrets \
-  --from-literal=access-key=$SCW_ACCESS_KEY \
-  --from-literal=secret-key=$SCW_SECRET_KEY
+  --from-literal=access-key=$ESO_READER_ACCESS_KEY \
+  --from-literal=secret-key=$ESO_READER_SECRET_KEY
 
 # 5. SSH deploy key for Flux
 ssh-keygen -t ed25519 -f flux-deploy-key -N "" -C "flux-dev"
@@ -115,9 +117,19 @@ helm install flux-operator oci://ghcr.io/controlplaneio-fluxcd/charts/flux-opera
 
 # 7. Apply FluxInstance (triggers full DAG reconciliation)
 kubectl apply -f gitops/clusters/dev/flux-instance.yaml
+
+# 8. Create scoped IAM API keys (after Crossplane reconciles the IAM Applications)
+# Get application IDs:
+#   kubectl get applications.iam.scaleway.upbound.io \
+#     -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.atProvider.id}{"\n"}{end}'
+# Create API keys per application:
+#   scw iam api-key create application-id=<id>
+# Add keys to .env, then push the scoped credentials:
+source .env && ./scripts/push-secrets.sh scaleway-dns-credentials \
+  scaleway-crossplane-credentials cnpg-s3-credentials
 ```
 
-After step 7, Flux picks up `system.yaml` and `apps.yaml` from `gitops/clusters/dev/` and reconciles all components following the dependency graph.
+After step 7, Flux picks up `system.yaml` and `apps.yaml` from `gitops/clusters/dev/` and reconciles all components following the dependency graph. Step 8 scopes each service to least-privilege IAM credentials.
 
 ## Roadmap
 
@@ -183,8 +195,7 @@ Defense in depth - perimeter, internal, access control and audit:
 - [ ] Edge Services WAF pipeline (Crossplane - OWASP CRS protection on public HTTP endpoints)
 - [ ] PodDisruptionBudgets (GitOps - protect workloads during Kapsule auto-upgrade node drains)
 - [ ] Envoy Gateway rate limiting (GitOps - `BackendTrafficPolicy` to throttle abusive clients at L7)
-- [ ] IAM least-privilege (Crossplane `Application` + `Policy` - scoped API keys per service instead of broad credentials)
-- [ ] Audit Trail (Scaleway console - cloud-level logging of all API actions for compliance)
+- [x] IAM least-privilege (Crossplane `Application` + `Policy` - scoped API keys per service instead of broad credentials)
 - [ ] S3 bucket encryption SSE-ONE (Crossplane - AES-256 server-side encryption on all Object Storage buckets)
 - [ ] RBAC hardening (namespace-scoped roles - relevant for multi-team production, optional for single-operator)
 

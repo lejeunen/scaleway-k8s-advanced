@@ -1,0 +1,34 @@
+apiVersion: iam.scaleway.upbound.io/v1alpha1
+kind: Application
+metadata:
+  name: dns-manager
+spec:
+  forProvider:
+    name: dns-manager
+    description: "Scoped credentials for external-dns and cert-manager DNS-01 solver"
+    tags:
+      - "env:dev"
+      - "managed-by:crossplane"
+  providerConfigRef:
+    name: default
+---
+apiVersion: iam.scaleway.upbound.io/v1alpha1
+kind: Policy
+metadata:
+  name: dns-manager
+spec:
+  forProvider:
+    name: dns-manager
+    description: "DNS-only access for external-dns and cert-manager"
+    applicationIdRef:
+      name: dns-manager
+    rule:
+      - permissionSetNames:
+          - DomainsDNSFullAccess
+        projectIds:
+          - "${SCW_PROJECT_ID}"
+    tags:
+      - "env:dev"
+      - "managed-by:crossplane"
+  providerConfigRef:
+    name: default

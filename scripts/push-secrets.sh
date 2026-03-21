@@ -69,17 +69,20 @@ should_push() {
 # Each secret's JSON payload mirrors what was previously in terragrunt.hcl
 
 push_all() {
+  # IAM scoped API keys (created via: scw iam api-key create application-id=<id>)
+  # Application IDs: kubectl get applications.iam.scaleway.upbound.io -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.atProvider.id}{"\n"}{end}'
+
   if should_push "scaleway-dns-credentials"; then
-    require_env SCW_ACCESS_KEY SCW_SECRET_KEY
+    require_env DNS_MANAGER_ACCESS_KEY DNS_MANAGER_SECRET_KEY
     push_secret "scaleway-dns-credentials" "$(jq -nc \
-      --arg ak "$SCW_ACCESS_KEY" --arg sk "$SCW_SECRET_KEY" \
+      --arg ak "$DNS_MANAGER_ACCESS_KEY" --arg sk "$DNS_MANAGER_SECRET_KEY" \
       '{"access-key": $ak, "secret-key": $sk}')"
   fi
 
   if should_push "scaleway-crossplane-credentials"; then
-    require_env SCW_ACCESS_KEY SCW_SECRET_KEY SCW_DEFAULT_PROJECT_ID SCW_REGION
+    require_env CROSSPLANE_ACCESS_KEY CROSSPLANE_SECRET_KEY SCW_DEFAULT_PROJECT_ID SCW_REGION
     push_secret "scaleway-crossplane-credentials" "$(jq -nc \
-      --arg ak "$SCW_ACCESS_KEY" --arg sk "$SCW_SECRET_KEY" \
+      --arg ak "$CROSSPLANE_ACCESS_KEY" --arg sk "$CROSSPLANE_SECRET_KEY" \
       --arg pid "$SCW_DEFAULT_PROJECT_ID" --arg region "$SCW_REGION" \
       '{"access_key": $ak, "secret_key": $sk, "project_id": $pid, "region": $region}')"
   fi
@@ -92,9 +95,9 @@ push_all() {
   fi
 
   if should_push "cnpg-s3-credentials"; then
-    require_env SCW_ACCESS_KEY SCW_SECRET_KEY
+    require_env CNPG_BACKUP_ACCESS_KEY CNPG_BACKUP_SECRET_KEY
     push_secret "cnpg-s3-credentials" "$(jq -nc \
-      --arg ak "$SCW_ACCESS_KEY" --arg sk "$SCW_SECRET_KEY" \
+      --arg ak "$CNPG_BACKUP_ACCESS_KEY" --arg sk "$CNPG_BACKUP_SECRET_KEY" \
       '{"ACCESS_KEY_ID": $ak, "ACCESS_SECRET_KEY": $sk}')"
   fi
 

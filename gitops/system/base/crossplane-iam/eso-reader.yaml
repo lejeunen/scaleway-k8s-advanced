@@ -1,0 +1,34 @@
+apiVersion: iam.scaleway.upbound.io/v1alpha1
+kind: Application
+metadata:
+  name: eso-reader
+spec:
+  forProvider:
+    name: eso-reader
+    description: "Scoped credentials for External Secrets Operator (Secret Manager read-only)"
+    tags:
+      - "env:dev"
+      - "managed-by:crossplane"
+  providerConfigRef:
+    name: default
+---
+apiVersion: iam.scaleway.upbound.io/v1alpha1
+kind: Policy
+metadata:
+  name: eso-reader
+spec:
+  forProvider:
+    name: eso-reader
+    description: "Secret Manager read-only access for ESO ClusterSecretStore"
+    applicationIdRef:
+      name: eso-reader
+    rule:
+      - permissionSetNames:
+          - SecretManagerReadOnly
+        projectIds:
+          - "${SCW_PROJECT_ID}"
+    tags:
+      - "env:dev"
+      - "managed-by:crossplane"
+  providerConfigRef:
+    name: default
