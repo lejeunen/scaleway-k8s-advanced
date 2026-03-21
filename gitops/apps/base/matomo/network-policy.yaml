@@ -26,6 +26,15 @@ spec:
         - ports:
             - port: "80"
               protocol: TCP
+    # Dashy dev portal status checks
+    - fromEndpoints:
+        - matchLabels:
+            app: dashy
+            k8s:io.kubernetes.pod.namespace: dashy
+      toPorts:
+        - ports:
+            - port: "80"
+              protocol: TCP
   egress:
     # DNS resolution
     - toEndpoints:

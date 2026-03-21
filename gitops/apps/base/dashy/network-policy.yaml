@@ -29,48 +29,21 @@ spec:
               protocol: UDP
             - port: "53"
               protocol: TCP
-    # Status checks - Grafana
-    - toEndpoints:
-        - matchLabels:
-            app.kubernetes.io/name: grafana
-            k8s:io.kubernetes.pod.namespace: monitoring
-      toPorts:
-        - ports:
-            - port: "3000"
-              protocol: TCP
-    # Status checks - Flux Web UI
-    - toEndpoints:
-        - matchLabels:
-            app.kubernetes.io/name: flux-operator
-            k8s:io.kubernetes.pod.namespace: flux-system
-      toPorts:
-        - ports:
-            - port: "8080"
-              protocol: TCP
-    # Status checks - Matomo
-    - toEndpoints:
-        - matchLabels:
-            app: matomo
-            k8s:io.kubernetes.pod.namespace: matomo
+    # Status checks - in-cluster services
+    - toEntities:
+        - cluster
       toPorts:
         - ports:
             - port: "80"
               protocol: TCP
-    # Status checks - Element Web
-    - toEndpoints:
-        - matchLabels:
-            app.kubernetes.io/name: element-web
-            k8s:io.kubernetes.pod.namespace: matrix
-      toPorts:
-        - ports:
-            - port: "80"
-              protocol: TCP
-    # Status checks - Sovereign Cloud Wisdom
-    - toEndpoints:
-        - matchLabels:
-            app.kubernetes.io/name: sovereign-cloud-wisdom
-            k8s:io.kubernetes.pod.namespace: wisdom
-      toPorts:
-        - ports:
             - port: "8080"
+              protocol: TCP
+            - port: "9080"
+              protocol: TCP
+    # Status checks - external services (GitHub, Scaleway Console)
+    - toCIDRSet:
+        - cidr: "0.0.0.0/0"
+      toPorts:
+        - ports:
+            - port: "443"
               protocol: TCP

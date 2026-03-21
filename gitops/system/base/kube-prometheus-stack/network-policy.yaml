@@ -17,6 +17,15 @@ spec:
         - ports:
             - port: "3000"
               protocol: TCP
+    # Dashy dev portal status checks
+    - fromEndpoints:
+        - matchLabels:
+            app: dashy
+            k8s:io.kubernetes.pod.namespace: dashy
+      toPorts:
+        - ports:
+            - port: "3000"
+              protocol: TCP
   egress:
     # DNS
     - toEndpoints:

@@ -241,6 +241,15 @@ spec:
         - ports:
             - port: "8080"
               protocol: TCP
+    # Dashy dev portal status checks
+    - fromEndpoints:
+        - matchLabels:
+            app: dashy
+            k8s:io.kubernetes.pod.namespace: dashy
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
 ---
 # Element Admin - static frontend
 apiVersion: cilium.io/v2
@@ -259,6 +268,15 @@ spec:
         - matchLabels:
             app.kubernetes.io/name: envoy
             k8s:io.kubernetes.pod.namespace: envoy-gateway-system
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    # Dashy dev portal status checks
+    - fromEndpoints:
+        - matchLabels:
+            app: dashy
+            k8s:io.kubernetes.pod.namespace: dashy
       toPorts:
         - ports:
             - port: "8080"

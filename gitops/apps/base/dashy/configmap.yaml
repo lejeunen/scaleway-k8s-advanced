@@ -37,7 +37,7 @@ data:
             url: https://flux.scw.sovereigncloudwisdom.eu
             icon: hl-flux-cd
             statusCheck: true
-            statusCheckUrl: http://flux-operator.flux-system.svc.cluster.local:8080
+            statusCheckUrl: http://flux-operator.flux-system.svc.cluster.local:9080
       - name: Communication
         icon: fas fa-comments
         items:
@@ -51,6 +51,8 @@ data:
             description: Matrix server administration
             url: https://admin-matrix.scw.sovereigncloudwisdom.eu
             icon: hl-element
+            statusCheck: true
+            statusCheckUrl: http://matrix-stack-element-admin.matrix.svc.cluster.local:8080
       - name: Applications
         icon: fas fa-rocket
         items:
@@ -59,7 +61,7 @@ data:
             url: https://wisdom.scw.sovereigncloudwisdom.eu
             icon: fas fa-cloud
             statusCheck: true
-            statusCheckUrl: http://sovereign-cloud-wisdom.wisdom.svc.cluster.local:8080
+            statusCheckUrl: http://sovereign-cloud-wisdom.wisdom.svc.cluster.local:80
       - name: Infrastructure
         icon: fas fa-server
         items:
@@ -67,7 +69,9 @@ data:
             description: Cloud provider management console
             url: https://console.scaleway.com
             icon: fas fa-cloud
+            statusCheck: true
           - title: GitHub Repository
             description: Source code and GitOps manifests
             url: https://github.com/lejeunen/scaleway-k8s-advanced
             icon: fab fa-github
+            statusCheck: true
