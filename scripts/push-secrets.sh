@@ -80,9 +80,9 @@ push_all() {
   fi
 
   if should_push "scaleway-crossplane-credentials"; then
-    require_env CROSSPLANE_ACCESS_KEY CROSSPLANE_SECRET_KEY SCW_DEFAULT_PROJECT_ID SCW_REGION
+    require_env SCW_ACCESS_KEY SCW_SECRET_KEY SCW_DEFAULT_PROJECT_ID SCW_REGION
     push_secret "scaleway-crossplane-credentials" "$(jq -nc \
-      --arg ak "$CROSSPLANE_ACCESS_KEY" --arg sk "$CROSSPLANE_SECRET_KEY" \
+      --arg ak "$SCW_ACCESS_KEY" --arg sk "$SCW_SECRET_KEY" \
       --arg pid "$SCW_DEFAULT_PROJECT_ID" --arg region "$SCW_REGION" \
       '{"access_key": $ak, "secret_key": $sk, "project_id": $pid, "region": $region}')"
   fi
