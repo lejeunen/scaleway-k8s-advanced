@@ -51,7 +51,7 @@ Each top-level directory is owned by a specific tool - you always know what mana
 
 | Directory | Managed by | Purpose |
 |-----------|------------|---------|
-| `infrastructure/` | Terraform/Terragrunt | Bootstrap: VPC, Kapsule cluster, Secret Manager |
+| `bootstrap/` | Terraform/Terragrunt | Bootstrap: VPC, Kapsule cluster, Secret Manager |
 | `gitops/system/base/` | Flux | Per-component manifests (HelmRelease, namespace, CRD instances) |
 | `gitops/system/dev/` | Flux | Per-component Flux Kustomizations with `dependsOn` DAG |
 | `gitops/apps/` | Flux | Application workloads |
@@ -83,7 +83,7 @@ Flux reconciliation: per-component DAG with explicit `dependsOn` edges between c
 
 ```bash
 # 1. Infrastructure (secret-manager creates shells only, no sensitive data in state)
-cd infrastructure/dev/vpc && terragrunt apply
+cd bootstrap/dev/vpc && terragrunt apply
 cd ../kapsule && terragrunt apply
 cd ../secret-manager && terragrunt apply
 
@@ -93,7 +93,7 @@ source .env && ./scripts/push-secrets.sh grafana-admin-credentials matomo-mariad
   mistral-api-credentials jeanne-matrix-credentials openclaw-github-app jeanne-scaleway-credentials
 
 # 3. Kubeconfig (KUBECONFIG is set via .env)
-cd infrastructure/dev/kapsule
+cd bootstrap/dev/kapsule
 terragrunt output -json kubeconfig | jq -r '.[0].config_file' > ../.kubeconfig
 
 # 4. Bootstrap secret for External Secrets Operator (scoped to Secret Manager read-only)
