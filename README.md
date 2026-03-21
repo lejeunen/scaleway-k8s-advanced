@@ -119,17 +119,18 @@ helm install flux-operator oci://ghcr.io/controlplaneio-fluxcd/charts/flux-opera
 kubectl apply -f gitops/clusters/dev/flux-instance.yaml
 
 # 8. Create scoped IAM API keys (after Crossplane reconciles the IAM Applications)
+# Crossplane keeps the main key (it manages IAM resources and can't bootstrap its own permissions).
+# dns-manager, cnpg-backup, and eso-reader get scoped keys.
 # Get application IDs:
 #   kubectl get applications.iam.scaleway.upbound.io \
 #     -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.atProvider.id}{"\n"}{end}'
-# Create API keys per application:
-#   scw iam api-key create application-id=<id>
+# Create API keys per application (1y expiration):
+#   scw iam api-key create application-id=<id> expires-at=<date>
 # Add keys to .env, then push the scoped credentials:
-source .env && ./scripts/push-secrets.sh scaleway-dns-credentials \
-  scaleway-crossplane-credentials cnpg-s3-credentials
+source .env && ./scripts/push-secrets.sh scaleway-dns-credentials cnpg-s3-credentials
 ```
 
-After step 7, Flux picks up `system.yaml` and `apps.yaml` from `gitops/clusters/dev/` and reconciles all components following the dependency graph. Step 8 scopes each service to least-privilege IAM credentials.
+After step 7, Flux picks up `system.yaml` and `apps.yaml` from `gitops/clusters/dev/` and reconciles all components following the dependency graph. Step 8 scopes DNS and CNPG backup services to least-privilege IAM credentials.
 
 ## Roadmap
 
