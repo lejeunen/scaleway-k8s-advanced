@@ -27,8 +27,7 @@ spec:
     rule:
       - permissionSetNames:
           - DomainsDNSFullAccess
-        projectIds:
-          - "${SCW_PROJECT_ID}"
+        organizationId: "${SCW_ORGANIZATION_ID}"
     tags:
       - env=dev
       - managed-by=crossplane
