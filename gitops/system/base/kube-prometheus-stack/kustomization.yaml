@@ -8,5 +8,7 @@ resources:
   - externalsecret-cockpit-token.yaml
   - externalsecret-oidc.yaml
   - httproute-grafana.yaml
+  - httproute-prometheus.yaml
   - securitypolicy-grafana.yaml
+  - securitypolicy-prometheus.yaml
   - network-policy.yaml

@@ -23,6 +23,12 @@ data:
             icon: hl-grafana
             statusCheck: true
             statusCheckUrl: http://kube-prometheus-stack-grafana.monitoring.svc.cluster.local:80
+          - title: Prometheus
+            description: Metrics collection and alerting
+            url: https://prometheus.scw.sovereigncloudwisdom.eu
+            icon: hl-prometheus
+            statusCheck: true
+            statusCheckUrl: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
           - title: Matomo
             description: Web analytics (GDPR-compliant)
             url: https://analytics.scw.sovereigncloudwisdom.eu

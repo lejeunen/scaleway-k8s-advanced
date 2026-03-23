@@ -103,6 +103,24 @@ spec:
         - ports:
             - port: "9090"
               protocol: TCP
+    # Envoy Gateway proxy (public HTTPRoute)
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: envoy
+            k8s:io.kubernetes.pod.namespace: envoy-gateway-system
+      toPorts:
+        - ports:
+            - port: "9090"
+              protocol: TCP
+    # Dashy dev portal status checks
+    - fromEndpoints:
+        - matchLabels:
+            app: dashy
+            k8s:io.kubernetes.pod.namespace: dashy
+      toPorts:
+        - ports:
+            - port: "9090"
+              protocol: TCP
   egress:
     # DNS
     - toEndpoints:
