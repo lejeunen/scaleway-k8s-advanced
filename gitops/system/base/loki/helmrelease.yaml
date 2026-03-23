@@ -33,6 +33,7 @@ spec:
         replication_factor: 1
       compactor:
         retention_enabled: true
+        delete_request_store: filesystem
       storage:
         type: filesystem
       schemaConfig:
