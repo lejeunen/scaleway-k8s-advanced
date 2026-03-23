@@ -18,9 +18,9 @@ spec:
     scopes:
       - openid
       - email
-    cookieDomain: "scw.sovereigncloudwisdom.eu"
     cookieNames:
-      idToken: "google-id-token"
+      idToken: "matomo-id-token"
+      accessToken: "matomo-access-token"
   jwt:
     providers:
       - name: google
@@ -31,7 +31,7 @@ spec:
           uri: "https://www.googleapis.com/oauth2/v3/certs"
         extractFrom:
           cookies:
-            - "google-id-token"
+            - "matomo-id-token"
   authorization:
     defaultAction: Deny
     rules:
