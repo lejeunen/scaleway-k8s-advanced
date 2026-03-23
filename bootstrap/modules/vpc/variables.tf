@@ -19,6 +19,22 @@ variable "region" {
   type        = string
 }
 
+variable "zone" {
+  description = "Scaleway zone for zonal resources (Public Gateway)"
+  type        = string
+}
+
+variable "public_gateway_name" {
+  description = "Name of the Public Gateway"
+  type        = string
+}
+
+variable "public_gateway_type" {
+  description = "Public Gateway type (VPC-GW-S, VPC-GW-M, VPC-GW-L)"
+  type        = string
+  default     = "VPC-GW-S"
+}
+
 variable "tags" {
   description = "Tags to apply to resources"
   type        = list(string)

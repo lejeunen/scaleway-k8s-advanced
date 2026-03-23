@@ -65,6 +65,12 @@ variable "pool_autoscaling" {
   default     = true
 }
 
+variable "public_ip_disabled" {
+  description = "Disable public IPs on nodes (requires Public Gateway for NAT)"
+  type        = bool
+  default     = false
+}
+
 variable "delete_additional_resources" {
   description = "Delete LBs, volumes, etc. on cluster destroy. Safe for dev, dangerous for prod."
   type        = bool

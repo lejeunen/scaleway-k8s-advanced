@@ -34,6 +34,7 @@ inputs = {
   pool_min_size               = local.env.locals.k8s_pool_min_size
   pool_max_size               = local.env.locals.k8s_pool_max_size
   pool_autoscaling            = local.env.locals.k8s_pool_autoscale
+  public_ip_disabled          = local.env.locals.k8s_public_ip_disabled
   delete_additional_resources = local.env.locals.k8s_delete_additional_resources
   auto_upgrade_enabled        = local.env.locals.k8s_auto_upgrade
   auto_upgrade_hour           = local.env.locals.k8s_auto_upgrade_hour

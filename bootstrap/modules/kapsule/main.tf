@@ -27,14 +27,15 @@ resource "scaleway_k8s_cluster" "this" {
 }
 
 resource "scaleway_k8s_pool" "default" {
-  cluster_id  = scaleway_k8s_cluster.this.id
-  name        = "${var.cluster_name}-default"
-  node_type   = var.node_type
-  size        = var.pool_size
-  min_size    = var.pool_min_size
-  max_size    = var.pool_max_size
-  autoscaling = var.pool_autoscaling
-  autohealing = true
+  cluster_id         = scaleway_k8s_cluster.this.id
+  name               = "default"
+  node_type          = var.node_type
+  size               = var.pool_size
+  min_size           = var.pool_min_size
+  max_size           = var.pool_max_size
+  autoscaling        = var.pool_autoscaling
+  autohealing        = true
+  public_ip_disabled = var.public_ip_disabled
 
   upgrade_policy {
     max_unavailable = 1

@@ -7,3 +7,8 @@ output "private_network_id" {
   description = "ID of the private network"
   value       = scaleway_vpc_private_network.this.id
 }
+
+output "public_gateway_id" {
+  description = "ID of the Public Gateway"
+  value       = scaleway_vpc_public_gateway.this.id
+}
