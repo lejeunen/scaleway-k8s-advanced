@@ -20,7 +20,7 @@ spec:
       effective_cache_size: "128MB"
 
   storage:
-    size: 3Gi
+    size: 10Gi
 
   plugins:
     - name: barman-cloud.cloudnative-pg.io
