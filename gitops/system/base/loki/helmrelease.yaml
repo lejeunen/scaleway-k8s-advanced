@@ -27,8 +27,12 @@ spec:
 
     loki:
       auth_enabled: false
+      limits_config:
+        retention_period: 7d
       commonConfig:
         replication_factor: 1
+      compactor:
+        retention_enabled: true
       storage:
         type: filesystem
       schemaConfig:

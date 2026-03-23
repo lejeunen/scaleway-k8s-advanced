@@ -37,7 +37,7 @@ spec:
     # Prometheus storage and retention
     prometheus:
       prometheusSpec:
-        retention: 15d
+        retention: 7d
         resources:
           requests:
             memory: 768Mi
