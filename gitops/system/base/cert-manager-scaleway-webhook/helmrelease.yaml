@@ -33,3 +33,5 @@ spec:
         drop:
           - ALL
       readOnlyRootFilesystem: true
+      runAsUser: 1000
+      runAsGroup: 1000
