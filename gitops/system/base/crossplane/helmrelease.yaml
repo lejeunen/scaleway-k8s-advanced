@@ -32,3 +32,19 @@ spec:
     resourcesRBACManager:
       requests:
         memory: 128Mi
+    securityContextCrossplane:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    securityContextRBACManager:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault

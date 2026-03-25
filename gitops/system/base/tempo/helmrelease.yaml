@@ -21,10 +21,20 @@ spec:
       retries: 3
       strategy: rollback
   values:
+    securityContext:
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
     tempo:
       resources:
         requests:
           memory: 128Mi
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        readOnlyRootFilesystem: true
       retention: 48h
       receivers:
         otlp:

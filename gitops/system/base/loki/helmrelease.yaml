@@ -53,6 +53,10 @@ spec:
       resources:
         requests:
           memory: 256Mi
+      podSecurityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
 
     # Disable components not needed in SingleBinary mode
     backend:
