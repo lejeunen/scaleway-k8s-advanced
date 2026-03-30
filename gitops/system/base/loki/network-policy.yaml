@@ -52,3 +52,16 @@ spec:
         - ports:
             - port: "7946"
               protocol: TCP
+    # K8s API server (sc-rules sidecar watches secrets with loki_rule label)
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+    - toCIDRSet:
+        - cidr: 10.32.0.1/32
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
