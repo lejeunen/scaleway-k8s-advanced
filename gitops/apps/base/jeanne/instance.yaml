@@ -105,6 +105,20 @@ spec:
         - name: soul
           mountPath: /etc/jeanne-soul
           readOnly: true
+    - name: init-matrix-deps
+      image: ghcr.io/openclaw/openclaw:2026.4.5
+      command:
+        - sh
+        - -c
+        - |
+          set -eu
+          cd /app/extensions/matrix
+          # Replace workspace:* refs with * so npm can resolve them
+          sed -i 's/"workspace:\*"/"*"/g' package.json
+          npm install --omit=dev
+      volumeMounts:
+        - name: matrix-node-modules
+          mountPath: /app/extensions/matrix/node_modules
     - name: init-github-credentials
       image: ghcr.io/openclaw/openclaw:2026.4.5
       command:
@@ -245,6 +259,8 @@ spec:
       enabled: true
       size: 5Gi
   extraVolumes:
+    - name: matrix-node-modules
+      emptyDir: {}
     - name: soul
       configMap:
         name: jeanne-soul
@@ -265,6 +281,8 @@ spec:
                   fieldRef:
                     fieldPath: metadata.namespace
   extraVolumeMounts:
+    - name: matrix-node-modules
+      mountPath: /app/extensions/matrix/node_modules
     - name: k8s-api-token
       mountPath: /var/run/secrets/kubernetes.io/k8s-api
       readOnly: true
