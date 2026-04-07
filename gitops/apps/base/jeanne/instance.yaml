@@ -1,7 +1,7 @@
 apiVersion: openclaw.rocks/v1alpha1
 kind: OpenClawInstance
 metadata:
-  name: gjeanne
+  name: jeanne
   namespace: jeanne
 spec:
   image:
