@@ -75,7 +75,7 @@ spec:
           bootstrapTotalMaxChars: 120000
       channels:
         matrix:
-          enabled: true
+          enabled: false
           homeserver: "http://matrix-stack-synapse-main.matrix.svc.cluster.local:8008"
           encryption: false
           dm:
