@@ -1,7 +1,7 @@
 apiVersion: openclaw.rocks/v1alpha1
 kind: OpenClawInstance
 metadata:
-  name: jeanne
+  name: gjeanne
   namespace: jeanne
 spec:
   image:
@@ -113,9 +113,13 @@ spec:
         - |
           set -eu
           cd /app/extensions/matrix
-          # Replace workspace:* refs with * so npm can resolve them
+          # Strip workspace:* refs (pnpm monorepo only) so npm can resolve
           sed -i 's/"workspace:\*"/"*"/g' package.json
+          # Remove openclaw from deps (it's the main app at /app, not an npm package)
+          sed -i '/"openclaw":/d' package.json
           npm install --omit=dev
+          # Symlink the main app as the openclaw package for runtime resolution
+          ln -sfn /app node_modules/openclaw
       volumeMounts:
         - name: matrix-node-modules
           mountPath: /app/extensions/matrix/node_modules
