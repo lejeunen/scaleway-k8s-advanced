@@ -5,7 +5,7 @@ metadata:
   namespace: jeanne
 spec:
   image:
-    tag: "2026.4.5"
+    tag: "2026.3.1"
   envFrom:
     - secretRef:
         name: mistral-api-credentials
@@ -75,9 +75,9 @@ spec:
           bootstrapTotalMaxChars: 120000
       channels:
         matrix:
-          enabled: false
+          enabled: true
           homeserver: "http://matrix-stack-synapse-main.matrix.svc.cluster.local:8008"
-          encryption: false
+          encryption: true
           dm:
             policy: "open"
           groupPolicy: "open"
@@ -90,7 +90,7 @@ spec:
     pnpm: true
   initContainers:
     - name: init-soul
-      image: ghcr.io/openclaw/openclaw:2026.4.5
+      image: ghcr.io/openclaw/openclaw:2026.3.1
       command:
         - sh
         - -c
@@ -106,7 +106,7 @@ spec:
           mountPath: /etc/jeanne-soul
           readOnly: true
     - name: init-matrix-deps
-      image: ghcr.io/openclaw/openclaw:2026.4.5
+      image: ghcr.io/openclaw/openclaw:2026.3.1
       command:
         - sh
         - -c
@@ -122,7 +122,7 @@ spec:
         - name: matrix-node-modules
           mountPath: /app/extensions/matrix/node_modules
     - name: init-github-credentials
-      image: ghcr.io/openclaw/openclaw:2026.4.5
+      image: ghcr.io/openclaw/openclaw:2026.3.1
       command:
         - sh
         - -c
@@ -195,7 +195,7 @@ spec:
           mountPath: /home/openclaw/.openclaw
 
     - name: init-tools
-      image: ghcr.io/openclaw/openclaw:2026.4.5
+      image: ghcr.io/openclaw/openclaw:2026.3.1
       command:
         - sh
         - -c
