@@ -16,6 +16,15 @@ spec:
         - ports:
             - port: "4317"
               protocol: TCP
+    # Jeanne OTLP traces (diagnostics-otel plugin)
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/instance: jeanne
+            k8s:io.kubernetes.pod.namespace: jeanne
+      toPorts:
+        - ports:
+            - port: "4318"
+              protocol: TCP
     # Grafana queries traces
     - fromEndpoints:
         - matchLabels:

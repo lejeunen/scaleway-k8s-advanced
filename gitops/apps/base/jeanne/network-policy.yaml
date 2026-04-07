@@ -43,6 +43,15 @@ spec:
         - ports:
             - port: "8008"
               protocol: TCP
+    # OTLP traces to Tempo
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: tempo
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports:
+            - port: "4318"
+              protocol: TCP
   ingress:
     # Kubelet health probes
     - fromEntities:
@@ -51,6 +60,15 @@ spec:
       toPorts:
         - ports:
             - port: "18790"
+              protocol: TCP
+    # Prometheus scraping OTel Collector sidecar metrics
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: prometheus
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports:
+            - port: "9090"
               protocol: TCP
 ---
 # Snapshot backup CronJob

@@ -38,3 +38,12 @@ spec:
         - ports:
             - port: "9443"
               protocol: TCP
+    # Prometheus scraping operator metrics
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: prometheus
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports:
+            - port: "8443"
+              protocol: TCP

@@ -5,7 +5,7 @@ metadata:
   namespace: jeanne
 spec:
   image:
-    tag: "2026.3.1"
+    tag: "2026.4.5"
   envFrom:
     - secretRef:
         name: mistral-api-credentials
@@ -30,6 +30,23 @@ spec:
     - "npm:kubernetes-mcp-server"
   config:
     raw:
+      plugins:
+        allow:
+          - "diagnostics-otel"
+        entries:
+          diagnostics-otel:
+            enabled: true
+      diagnostics:
+        enabled: true
+        otel:
+          enabled: true
+          endpoint: "http://tempo.monitoring.svc.cluster.local:4318"
+          serviceName: "jeanne"
+          protocol: "http/protobuf"
+          traces: true
+          metrics: true
+          logs: false
+          sampleRate: 1.0
       agents:
         defaults:
           model:
@@ -72,7 +89,7 @@ spec:
     pnpm: true
   initContainers:
     - name: init-soul
-      image: ghcr.io/openclaw/openclaw:2026.3.1
+      image: ghcr.io/openclaw/openclaw:2026.4.5
       command:
         - sh
         - -c
@@ -88,7 +105,7 @@ spec:
           mountPath: /etc/jeanne-soul
           readOnly: true
     - name: init-matrix-deps
-      image: ghcr.io/openclaw/openclaw:2026.3.1
+      image: ghcr.io/openclaw/openclaw:2026.4.5
       command:
         - sh
         - -c
@@ -100,7 +117,7 @@ spec:
         - name: matrix-node-modules
           mountPath: /app/extensions/matrix/node_modules
     - name: init-github-credentials
-      image: ghcr.io/openclaw/openclaw:2026.3.1
+      image: ghcr.io/openclaw/openclaw:2026.4.5
       command:
         - sh
         - -c
@@ -173,7 +190,7 @@ spec:
           mountPath: /home/openclaw/.openclaw
 
     - name: init-tools
-      image: ghcr.io/openclaw/openclaw:2026.3.1
+      image: ghcr.io/openclaw/openclaw:2026.4.5
       command:
         - sh
         - -c
