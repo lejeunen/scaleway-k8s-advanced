@@ -113,12 +113,8 @@ spec:
         - |
           set -eu
           cd /app/extensions/matrix
-          # Strip workspace:* refs (pnpm monorepo only) so npm can resolve
-          sed -i 's/"workspace:\*"/"*"/g' package.json
-          # Remove openclaw from deps (it's the main app at /app, not an npm package)
-          sed -i '/"openclaw":/d' package.json
           npm install --omit=dev
-          # Symlink the main app as the openclaw package for runtime resolution
+          # Symlink the main app as the openclaw peer dependency
           ln -sfn /app node_modules/openclaw
       volumeMounts:
         - name: matrix-node-modules
