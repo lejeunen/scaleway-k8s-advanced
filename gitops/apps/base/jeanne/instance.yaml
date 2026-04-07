@@ -113,6 +113,8 @@ spec:
         - |
           set -eu
           cd /app/extensions/matrix
+          # Replace workspace:* protocol (pnpm-only) with * for npm compat
+          sed -i 's/"workspace:\*"/"*"/g' package.json
           npm install --omit=dev
           # Symlink the main app as the openclaw peer dependency
           ln -sfn /app node_modules/openclaw
