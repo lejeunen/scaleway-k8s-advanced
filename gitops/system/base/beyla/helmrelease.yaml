@@ -37,6 +37,8 @@ spec:
     # Auto-discovery by kube-prometheus-stack
     serviceMonitor:
       enabled: true
+      additionalLabels:
+        release: kube-prometheus-stack
       metrics:
         endpoint:
           interval: 30s
@@ -46,7 +48,7 @@ spec:
       data:
         # Opt-in: only instrument pods with this label
         discovery:
-          services:
+          instrument:
             - k8s_pod_labels:
                 beyla.io/watch: "true"
 
