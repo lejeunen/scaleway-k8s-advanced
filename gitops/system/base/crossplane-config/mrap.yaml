@@ -1,0 +1,17 @@
+apiVersion: apiextensions.crossplane.io/v1alpha1
+kind: ManagedResourceActivationPolicy
+metadata:
+  name: scaleway-active-resources
+spec:
+  activate:
+    # IAM - scoped credentials for dns-manager, eso-reader, cnpg-backup
+    - applications.iam.scaleway.upbound.io
+    - applications.iam.scaleway.m.upbound.io
+    - policies.iam.scaleway.upbound.io
+    - policies.iam.scaleway.m.upbound.io
+    # Object Storage - CNPG backup bucket
+    - buckets.object.scaleway.upbound.io
+    - buckets.object.scaleway.m.upbound.io
+    # Container Registry
+    - registrynamespaces.registry.scaleway.upbound.io
+    - registrynamespaces.registry.scaleway.m.upbound.io

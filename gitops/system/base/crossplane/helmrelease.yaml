@@ -26,6 +26,7 @@ spec:
     provider:
       packages:
         - xpkg.upbound.io/scaleway/provider-scaleway:v0.6.0
+      defaultActivations: []
     resourcesCrossplane:
       requests:
         memory: 384Mi
