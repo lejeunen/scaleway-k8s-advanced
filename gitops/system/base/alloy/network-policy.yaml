@@ -8,9 +8,9 @@ spec:
     matchLabels:
       app.kubernetes.io/name: alloy
   ingress:
-    # OTLP traces from any namespace (apps send traces to Alloy)
+    # OTLP traces from any pod in any namespace
     - fromEndpoints:
-        - matchLabels: {}
+        - {}
       toPorts:
         - ports:
             - port: "4317"
