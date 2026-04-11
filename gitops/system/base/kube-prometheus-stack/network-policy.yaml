@@ -172,21 +172,15 @@ spec:
         - ports:
             - port: "12345"
               protocol: TCP
-    # Scrape Beyla metrics
-    - toEndpoints:
-        - matchLabels:
-            app.kubernetes.io/name: beyla
-      toPorts:
-        - ports:
-            - port: "9090"
-              protocol: TCP
-    # Scrape kubelet, apiserver, and node-exporter (host network)
+    # Scrape kubelet, apiserver, node-exporter, and Beyla (host network)
     - toEntities:
         - kube-apiserver
         - host
         - remote-node
       toPorts:
         - ports:
+            - port: "9090"
+              protocol: TCP
             - port: "9100"
               protocol: TCP
             - port: "10250"

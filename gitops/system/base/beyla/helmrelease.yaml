@@ -24,6 +24,9 @@ spec:
     # DaemonSet with hostPID (required for eBPF process discovery)
     privileged: true
 
+    env:
+      OTEL_EBPF_KUBE_CLUSTER_NAME: ${CLUSTER_NAME}
+
     resources:
       requests:
         memory: 128Mi
