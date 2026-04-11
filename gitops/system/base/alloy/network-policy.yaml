@@ -17,6 +17,14 @@ spec:
               protocol: TCP
             - port: "4318"
               protocol: TCP
+    # OTLP traces from Beyla (hostNetwork, not a Cilium endpoint)
+    - fromEntities:
+        - host
+        - remote-node
+      toPorts:
+        - ports:
+            - port: "4317"
+              protocol: TCP
     # Prometheus scraping Alloy metrics
     - fromEndpoints:
         - matchLabels:
