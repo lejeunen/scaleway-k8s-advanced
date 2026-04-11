@@ -1,0 +1,70 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: beyla
+  namespace: monitoring
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: beyla
+      version: "1.x"
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+      interval: 1h
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+      strategy: rollback
+  values:
+    # DaemonSet with hostPID (required for eBPF process discovery)
+    privileged: true
+
+    resources:
+      requests:
+        memory: 128Mi
+
+    # Expose Prometheus metrics via Service
+    service:
+      enabled: true
+      port: 9090
+      portName: metrics
+
+    # Auto-discovery by kube-prometheus-stack
+    serviceMonitor:
+      enabled: true
+      metrics:
+        endpoint:
+          interval: 30s
+
+    config:
+      create: true
+      data:
+        # Opt-in: only instrument pods with this label
+        discovery:
+          services:
+            - k8s_pod_labels:
+                beyla.io/watch: "true"
+
+        # Kubernetes metadata enrichment
+        attributes:
+          kubernetes:
+            enable: true
+
+        # Export traces via OTLP gRPC to Alloy
+        otel_traces_export:
+          endpoint: http://alloy.monitoring.svc.cluster.local:4317
+          protocol: grpc
+
+        # Prometheus metrics endpoint
+        prometheus_export:
+          port: 9090
+          path: /metrics
+
+        # Route grouping
+        routes:
+          unmatched: heuristic
