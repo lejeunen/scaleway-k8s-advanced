@@ -3,6 +3,7 @@ kind: Application
 metadata:
   name: eso-reader
 spec:
+  deletionPolicy: Orphan
   forProvider:
     name: eso-reader
     description: "Scoped credentials for External Secrets Operator (Secret Manager read-only)"
@@ -18,6 +19,7 @@ kind: Policy
 metadata:
   name: eso-reader
 spec:
+  deletionPolicy: Orphan
   forProvider:
     name: eso-reader
     description: "Secret Manager read-only access for ESO ClusterSecretStore"

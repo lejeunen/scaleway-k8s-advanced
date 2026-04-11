@@ -3,6 +3,7 @@ kind: Application
 metadata:
   name: dns-manager
 spec:
+  deletionPolicy: Orphan
   forProvider:
     name: dns-manager
     description: "Scoped credentials for external-dns and cert-manager DNS-01 solver"
@@ -18,6 +19,7 @@ kind: Policy
 metadata:
   name: dns-manager
 spec:
+  deletionPolicy: Orphan
   forProvider:
     name: dns-manager
     description: "DNS-only access for external-dns and cert-manager"

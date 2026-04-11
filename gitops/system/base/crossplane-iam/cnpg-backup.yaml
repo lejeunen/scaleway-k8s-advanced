@@ -3,6 +3,7 @@ kind: Application
 metadata:
   name: cnpg-backup
 spec:
+  deletionPolicy: Orphan
   forProvider:
     name: cnpg-backup
     description: "Scoped credentials for CNPG barman-cloud S3 backups"
@@ -18,6 +19,7 @@ kind: Policy
 metadata:
   name: cnpg-backup
 spec:
+  deletionPolicy: Orphan
   forProvider:
     name: cnpg-backup
     description: "S3 read/write access for CNPG database backups"

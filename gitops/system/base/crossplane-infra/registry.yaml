@@ -2,7 +2,10 @@ apiVersion: registry.scaleway.upbound.io/v1alpha1
 kind: RegistryNamespace
 metadata:
   name: sovereign-cloud-wisdom
+  annotations:
+    crossplane.io/external-name: "fr-par/743e6d9c-a2bd-4228-837e-72700b4bdd4a"
 spec:
+  deletionPolicy: Orphan
   forProvider:
     name: sovereign-cloud-wisdom
     region: ${SCW_REGION}

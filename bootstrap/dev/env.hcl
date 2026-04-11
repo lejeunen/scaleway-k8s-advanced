@@ -13,7 +13,7 @@ locals {
 
   # Kapsule
   k8s_cluster_name                = "dev-kapsule"
-  k8s_cluster_type                = "kapsule-dedicated-4"
+  k8s_cluster_type                = "kapsule"
   k8s_version                     = "1.35"
   k8s_cni                         = "cilium"
   k8s_node_type                   = "DEV1-L"

@@ -3,6 +3,7 @@ kind: Bucket
 metadata:
   name: cnpg-backups
 spec:
+  deletionPolicy: Orphan
   forProvider:
     name: scw-k8s-advanced-${CLUSTER_NAME}-cnpg-backups
     region: ${SCW_REGION}
