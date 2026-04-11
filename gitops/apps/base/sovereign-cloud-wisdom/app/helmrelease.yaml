@@ -17,7 +17,7 @@ spec:
   values:
     image:
       repository: rg.fr-par.scw.cloud/sovereign-cloud-wisdom/sovereign-cloud-wisdom
-      tag: "20260411164645-6aa5fd3" # {"$imagepolicy": "flux-system:sovereign-cloud-wisdom:tag"}
+      tag: "20260411171908-3283bc6" # {"$imagepolicy": "flux-system:sovereign-cloud-wisdom:tag"}
       pullSecret: sovereign-cloud-wisdom-registry
     podLabels:
       beyla.io/watch: "true"
