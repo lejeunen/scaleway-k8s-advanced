@@ -21,6 +21,19 @@ spec:
       pullSecret: sovereign-cloud-wisdom-registry
     podLabels:
       beyla.io/watch: "true"
+    env:
+      - name: OTEL_SERVICE_NAME
+        value: sovereign-cloud-wisdom
+      - name: OTEL_EXPORTER_OTLP_ENDPOINT
+        value: http://alloy.monitoring.svc.cluster.local:4317
+      - name: OTEL_EXPORTER_OTLP_PROTOCOL
+        value: grpc
+      - name: OTEL_TRACES_EXPORTER
+        value: otlp
+      - name: OTEL_METRICS_EXPORTER
+        value: none
+      - name: OTEL_LOGS_EXPORTER
+        value: none
     database:
       secret: wisdom-db-app
     cloudProvider: scw-advanced
