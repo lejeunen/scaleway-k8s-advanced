@@ -3,3 +3,20 @@ kind: Kustomization
 resources:
   - helmrelease.yaml
   # No CiliumNetworkPolicy: Beyla uses hostNetwork (bypasses Cilium endpoint policies)
+configMapGenerator:
+  - name: beyla-red-dashboard
+    namespace: monitoring
+    files:
+      - dashboard-red.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      disableNameSuffixHash: true
+  - name: beyla-traces-dashboard
+    namespace: monitoring
+    files:
+      - dashboard-traces.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      disableNameSuffixHash: true

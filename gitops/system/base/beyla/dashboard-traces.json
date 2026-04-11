@@ -1,0 +1,243 @@
+{
+    "annotations": {
+        "list": []
+    },
+    "description": "Recent traces from Beyla eBPF instrumentation via Tempo",
+    "editable": true,
+    "graphTooltip": 1,
+    "panels": [
+        {
+            "collapsed": false,
+            "gridPos": {
+                "h": 1,
+                "w": 24,
+                "x": 0,
+                "y": 0
+            },
+            "id": 100,
+            "title": "Overview",
+            "type": "row"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "reqps"
+                }
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 8,
+                "x": 0,
+                "y": 1
+            },
+            "id": 1,
+            "options": {
+                "colorMode": "background",
+                "graphMode": "area",
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ]
+                }
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "prometheus"
+                    },
+                    "expr": "sum(rate(http_server_request_duration_seconds_count{service_name=~\"$service\", k8s_namespace_name=~\"$namespace\", http_route!=\"\"}[$__rate_interval]))"
+                }
+            ],
+            "title": "Total Request Rate",
+            "type": "stat"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "s"
+                }
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 8,
+                "x": 8,
+                "y": 1
+            },
+            "id": 2,
+            "options": {
+                "colorMode": "background",
+                "graphMode": "area",
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ]
+                }
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "prometheus"
+                    },
+                    "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_request_duration_seconds_bucket{service_name=~\"$service\", k8s_namespace_name=~\"$namespace\", http_route!=\"\"}[$__rate_interval])))"
+                }
+            ],
+            "title": "p95 Latency",
+            "type": "stat"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "percentunit",
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "yellow",
+                                "value": 0.01
+                            },
+                            {
+                                "color": "red",
+                                "value": 0.05
+                            }
+                        ]
+                    }
+                }
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 8,
+                "x": 16,
+                "y": 1
+            },
+            "id": 3,
+            "options": {
+                "colorMode": "background",
+                "graphMode": "area",
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ]
+                }
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "prometheus"
+                    },
+                    "expr": "sum(rate(http_server_request_duration_seconds_count{service_name=~\"$service\", k8s_namespace_name=~\"$namespace\", http_response_status_code=~\"5..\"}[$__rate_interval])) / sum(rate(http_server_request_duration_seconds_count{service_name=~\"$service\", k8s_namespace_name=~\"$namespace\"}[$__rate_interval]))"
+                }
+            ],
+            "title": "Error Rate",
+            "type": "stat"
+        },
+        {
+            "collapsed": false,
+            "gridPos": {
+                "h": 1,
+                "w": 24,
+                "x": 0,
+                "y": 5
+            },
+            "id": 101,
+            "title": "Recent Traces",
+            "type": "row"
+        },
+        {
+            "datasource": {
+                "type": "tempo",
+                "uid": "P214B5B846CF3925F"
+            },
+            "gridPos": {
+                "h": 14,
+                "w": 24,
+                "x": 0,
+                "y": 6
+            },
+            "id": 4,
+            "options": {},
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "tempo",
+                        "uid": "P214B5B846CF3925F"
+                    },
+                    "queryType": "traceql",
+                    "query": "{resource.service.name=~\"$service\"}",
+                    "limit": 50,
+                    "tableType": "traces"
+                }
+            ],
+            "title": "Recent Traces",
+            "type": "table"
+        }
+    ],
+    "schemaVersion": 39,
+    "tags": [
+        "beyla",
+        "ebpf",
+        "traces"
+    ],
+    "templating": {
+        "list": [
+            {
+                "current": {},
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "definition": "label_values(http_server_request_duration_seconds_count, service_name)",
+                "hide": 0,
+                "includeAll": false,
+                "label": "Service",
+                "multi": false,
+                "name": "service",
+                "query": "label_values(http_server_request_duration_seconds_count, service_name)",
+                "refresh": 2,
+                "sort": 1,
+                "type": "query"
+            },
+            {
+                "current": {},
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "definition": "label_values(http_server_request_duration_seconds_count{service_name=~\"$service\"}, k8s_namespace_name)",
+                "hide": 0,
+                "includeAll": true,
+                "label": "Namespace",
+                "multi": true,
+                "name": "namespace",
+                "query": "label_values(http_server_request_duration_seconds_count{service_name=~\"$service\"}, k8s_namespace_name)",
+                "refresh": 2,
+                "sort": 1,
+                "type": "query"
+            }
+        ]
+    },
+    "time": {
+        "from": "now-1h",
+        "to": "now"
+    },
+    "title": "Beyla - Service Traces",
+    "uid": "beyla-traces"
+}
