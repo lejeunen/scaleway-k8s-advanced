@@ -67,7 +67,7 @@ data:
             url: https://wisdom.scw.sovereigncloudwisdom.eu
             icon: fas fa-cloud
             statusCheck: true
-            statusCheckUrl: http://sovereign-cloud-wisdom.wisdom.svc.cluster.local:80
+            statusCheckUrl: http://sovereign-cloud-wisdom.wisdom.svc.cluster.local:80/health
       - name: Infrastructure
         icon: fas fa-server
         items:
