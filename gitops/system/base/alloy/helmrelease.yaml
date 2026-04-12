@@ -134,6 +134,37 @@ spec:
             }
 
             output {
+              traces = [otelcol.processor.tail_sampling.default.input]
+            }
+          }
+
+          // Drop health-check traces (entire trace including child spans)
+          otelcol.processor.tail_sampling "default" {
+            decision_wait = "5s"
+
+            policy {
+              name = "drop-health-checks"
+              type = "drop"
+
+              drop {
+                drop_sub_policy {
+                  name = "match-health-path"
+                  type = "string_attribute"
+
+                  string_attribute {
+                    key    = "http.target"
+                    values = ["/health"]
+                  }
+                }
+              }
+            }
+
+            policy {
+              name = "keep-the-rest"
+              type = "always_sample"
+            }
+
+            output {
               traces = [otelcol.exporter.otlp.tempo.input]
             }
           }
