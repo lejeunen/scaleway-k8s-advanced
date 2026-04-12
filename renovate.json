@@ -6,6 +6,9 @@
   ],
   "timezone": "Europe/Brussels",
   "schedule": ["* 7 * * 1-5"],
+  "ignorePaths": [
+    "gitops/apps/base/sovereign-cloud-wisdom/**"
+  ],
   "vulnerabilityAlerts": {
     "labels": ["security"]
   },
@@ -16,11 +19,6 @@
     "managerFilePatterns": ["/gitops/.+\\.yaml$/"]
   },
   "packageRules": [
-    {
-      "description": "Ignore sovereign-cloud-wisdom (managed by Flux Image Automation)",
-      "matchFileNames": ["gitops/apps/base/sovereign-cloud-wisdom/**"],
-      "enabled": false
-    },
     {
       "description": "Ignore Kubernetes API version updates",
       "matchDatasources": ["kubernetes-api"],
