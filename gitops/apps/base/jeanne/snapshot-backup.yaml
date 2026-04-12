@@ -50,7 +50,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: snapshot
-              image: docker.io/alpine/k8s:1.32.0
+              image: docker.io/alpine/kubectl:1.35.3
               command:
                 - /bin/sh
                 - -c
