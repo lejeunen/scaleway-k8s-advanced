@@ -7,7 +7,8 @@
   "timezone": "Europe/Brussels",
   "schedule": ["* 7 * * 1-5"],
   "ignorePaths": [
-    "gitops/apps/base/sovereign-cloud-wisdom/**"
+    "gitops/apps/base/sovereign-cloud-wisdom/**",
+    "gitops/system/dev/image-automation/**"
   ],
   "vulnerabilityAlerts": {
     "labels": ["security"]
