@@ -11,6 +11,8 @@ spec:
   oidc:
     provider:
       issuer: "https://accounts.google.com"
+      authorizationEndpoint: "https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&prompt=consent"
+      tokenEndpoint: "https://oauth2.googleapis.com/token"
     clientID: "${GOOGLE_OIDC_CLIENT_ID}"
     clientSecret:
       name: "google-oidc-client-secret"
@@ -29,6 +31,7 @@ spec:
           - "${GOOGLE_OIDC_CLIENT_ID}"
         remoteJWKS:
           uri: "https://www.googleapis.com/oauth2/v3/certs"
+          cacheDuration: "86400s"
         extractFrom:
           cookies:
             - "admin-id-token"
