@@ -58,7 +58,10 @@ spec:
       scanJobsConcurrentLimit: 3
       infraAssessmentScannerEnabled: false
       clusterComplianceEnabled: false
+    excludeNamespaces: "kube-system,kube-node-lease,kube-public"
     trivy:
+      ignoreUnfixed: true
+      severity: HIGH,CRITICAL
       resources:
         limits:
           cpu: 500m
