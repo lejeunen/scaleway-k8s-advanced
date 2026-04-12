@@ -28,8 +28,9 @@ Bootstrap a Kapsule cluster with Terraform/Terragrunt, then manage everything el
 │  │ cert-manager   │  │ Loki          │  │ Sovereign    │  │
 │  │ External       │  │ Tempo         │  │  Cloud       │  │
 │  │   Secrets      │  │ Alloy         │  │  Wisdom      │  │
-│  │ CloudNativePG  │  │               │  │ Jeanne       │  │
+│  │ CloudNativePG  │  │ Beyla         │  │ Jeanne       │  │
 │  │ Crossplane     │  │               │  │  (AI agent)  │  │
+│  │ Trivy Operator │  │               │  │              │  │
 │  └────────────────┘  └───────────────┘  └──────────────┘  │
 ├───────────────────────────────────────────────────────────┤
 │                   Crossplane (Scaleway)                   │
@@ -198,6 +199,7 @@ Defense in depth - perimeter, internal, access control and audit:
 - [ ] Envoy Gateway rate limiting (GitOps - `BackendTrafficPolicy` to throttle abusive clients at L7)
 - [x] IAM least-privilege (Crossplane `Application` + `Policy` - scoped API keys per service instead of broad credentials)
 - [ ] S3 bucket encryption SSE-ONE (Crossplane - AES-256 server-side encryption on all Object Storage buckets)
+- [ ] Trivy Operator (GitOps - in-cluster vulnerability scanning of OS packages and application dependencies in container images)
 - [ ] RBAC hardening (namespace-scoped roles - relevant for multi-team production, optional for single-operator)
 
 ### Phase 7 - CI/CD 📋
