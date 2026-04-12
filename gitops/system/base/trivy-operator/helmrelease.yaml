@@ -40,6 +40,7 @@ spec:
     trivyOperator:
       scanJobPodTemplatePodSecurityContext:
         runAsNonRoot: true
+        runAsUser: 65534
         seccompProfile:
           type: RuntimeDefault
       scanJobPodTemplateContainerSecurityContext:
@@ -47,6 +48,7 @@ spec:
         privileged: false
         readOnlyRootFilesystem: true
         runAsNonRoot: true
+        runAsUser: 65534
         seccompProfile:
           type: RuntimeDefault
         capabilities:
