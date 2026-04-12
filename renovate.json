@@ -6,6 +6,15 @@
   ],
   "timezone": "Europe/Brussels",
   "schedule": ["* 7 * * 1-5"],
+  "dependencyDashboard": true,
+  "osvVulnerabilityAlerts": true,
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security"]
+  },
+  "ignorePaths": [
+    "gitops/apps/base/sovereign-cloud-wisdom/**"
+  ],
   "flux": {
     "managerFilePatterns": ["/gitops/.+\\.yaml$/"]
   },
@@ -13,6 +22,17 @@
     "managerFilePatterns": ["/gitops/.+\\.yaml$/"]
   },
   "packageRules": [
+    {
+      "description": "Disable all PRs by default (use dashboard for manual upgrades)",
+      "matchManagers": ["*"],
+      "enabled": false
+    },
+    {
+      "description": "Ignore Kubernetes API version updates",
+      "matchManagers": ["kubernetes"],
+      "matchDatasources": ["kubernetes-api"],
+      "enabled": false
+    },
     {
       "description": "Group Grafana observability stack",
       "matchManagers": ["flux"],
