@@ -1,0 +1,52 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "docker:pinDigests"
+  ],
+  "timezone": "Europe/Brussels",
+  "schedule": ["* 7 * * 1-5"],
+  "flux": {
+    "managerFilePatterns": ["/gitops/.+\\.yaml$/"]
+  },
+  "kubernetes": {
+    "managerFilePatterns": ["/gitops/.+\\.yaml$/"]
+  },
+  "packageRules": [
+    {
+      "description": "Group Grafana observability stack",
+      "matchManagers": ["flux"],
+      "matchDatasources": ["helm"],
+      "matchPackageNames": [
+        "alloy",
+        "beyla",
+        "loki",
+        "tempo",
+        "kube-prometheus-stack"
+      ],
+      "groupName": "grafana-stack"
+    },
+    {
+      "description": "Group cert-manager components",
+      "matchManagers": ["flux"],
+      "matchDatasources": ["helm"],
+      "matchPackageNames": [
+        "cert-manager",
+        "scaleway-certmanager-webhook"
+      ],
+      "groupName": "cert-manager"
+    }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "OpenClaw instance image tag",
+      "fileMatch": ["gitops/apps/base/jeanne/instance\\.yaml$"],
+      "matchStrings": [
+        "image:\\s*\\n\\s*tag:\\s*\"(?<currentValue>[^\"]+)\""
+      ],
+      "depNameTemplate": "ghcr.io/openclaw/openclaw",
+      "datasourceTemplate": "docker"
+    }
+  ]
+}
