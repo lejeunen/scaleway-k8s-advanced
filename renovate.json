@@ -1,20 +1,14 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended",
+    "security:only-security-updates",
     "docker:pinDigests"
   ],
   "timezone": "Europe/Brussels",
   "schedule": ["* 7 * * 1-5"],
-  "dependencyDashboard": true,
-  "osvVulnerabilityAlerts": true,
   "vulnerabilityAlerts": {
-    "enabled": true,
     "labels": ["security"]
   },
-  "ignorePaths": [
-    "gitops/apps/base/sovereign-cloud-wisdom/**"
-  ],
   "flux": {
     "managerFilePatterns": ["/gitops/.+\\.yaml$/"]
   },
@@ -23,13 +17,12 @@
   },
   "packageRules": [
     {
-      "description": "Disable all PRs by default (use dashboard for manual upgrades)",
-      "matchManagers": ["*"],
+      "description": "Ignore sovereign-cloud-wisdom (managed by Flux Image Automation)",
+      "matchFileNames": ["gitops/apps/base/sovereign-cloud-wisdom/**"],
       "enabled": false
     },
     {
       "description": "Ignore Kubernetes API version updates",
-      "matchManagers": ["kubernetes"],
       "matchDatasources": ["kubernetes-api"],
       "enabled": false
     },
