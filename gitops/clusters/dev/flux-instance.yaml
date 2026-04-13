@@ -20,6 +20,22 @@ spec:
     multitenant: false
     networkPolicy: true
     domain: "cluster.local"
+  kustomize:
+    patches:
+      - target:
+          kind: Deployment
+          name: "(helm-controller)"
+        patch: |
+          - op: add
+            path: /spec/template/spec/containers/0/args/-
+            value: --feature-gates=CancelHealthCheckOnNewRevision=true,DefaultToRetryOnFailure=true
+      - target:
+          kind: Deployment
+          name: "(kustomize-controller)"
+        patch: |
+          - op: add
+            path: /spec/template/spec/containers/0/args/-
+            value: --feature-gates=CancelHealthCheckOnNewRevision=true
   sync:
     kind: GitRepository
     url: "ssh://git@github.com/lejeunen/scaleway-k8s-advanced"
