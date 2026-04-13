@@ -172,6 +172,36 @@ spec:
         - ports:
             - port: "12345"
               protocol: TCP
+    # Scrape Trivy Operator metrics (trivy-system namespace)
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: trivy-operator
+            k8s:io.kubernetes.pod.namespace: trivy-system
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    # Scrape OpenClaw Operator metrics (openclaw namespace)
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: openclaw-operator
+            k8s:io.kubernetes.pod.namespace: openclaw
+      toPorts:
+        - ports:
+            - port: "8443"
+              protocol: TCP
+    # Scrape Matrix metrics (matrix namespace)
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: matrix
+      toPorts:
+        - ports:
+            - port: "8405"
+              protocol: TCP
+            - port: "8081"
+              protocol: TCP
+            - port: "9001"
+              protocol: TCP
     # Scrape kubelet, apiserver, node-exporter, and Beyla (host network)
     - toEntities:
         - kube-apiserver
