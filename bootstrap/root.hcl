@@ -5,7 +5,7 @@ remote_state {
     bucket     = "scaleway-k8s-advanced"
     key        = "${path_relative_to_include()}/terraform.tfstate"
     region     = "fr-par"
-    encrypt    = false
+    encrypt    = true
     access_key = get_env("SCW_ACCESS_KEY")
     secret_key = get_env("SCW_SECRET_KEY")
 
@@ -37,7 +37,7 @@ terraform {
   required_providers {
     scaleway = {
       source  = "scaleway/scaleway"
-      version = "~> 2.69"
+      version = "~> 2.71"
     }
   }
 }
