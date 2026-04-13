@@ -62,6 +62,9 @@ spec:
     trivy:
       ignoreUnfixed: true
       severity: HIGH,CRITICAL
+      configFile:
+        cache:
+          backend: memory
       resources:
         limits:
           cpu: 500m
