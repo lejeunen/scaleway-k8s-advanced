@@ -38,6 +38,9 @@ spec:
     prometheus:
       prometheusSpec:
         retention: 7d
+        serviceMonitorSelectorNilUsesHelmValues: false
+        podMonitorSelectorNilUsesHelmValues: false
+        ruleSelectorNilUsesHelmValues: false
         resources:
           requests:
             memory: 768Mi
