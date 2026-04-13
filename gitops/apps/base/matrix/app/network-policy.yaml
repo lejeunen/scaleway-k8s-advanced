@@ -38,6 +38,15 @@ spec:
         - ports:
             - port: "8008"
               protocol: TCP
+    # Prometheus metrics scraping
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: prometheus
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports:
+            - port: "8405"
+              protocol: TCP
   egress:
     # DNS
     - toEndpoints:
@@ -107,7 +116,7 @@ spec:
             k8s:io.kubernetes.pod.namespace: monitoring
       toPorts:
         - ports:
-            - port: "9093"
+            - port: "9001"
               protocol: TCP
   egress:
     # DNS
@@ -183,6 +192,15 @@ spec:
       toPorts:
         - ports:
             - port: "8080"
+              protocol: TCP
+    # Prometheus metrics scraping
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: prometheus
+            k8s:io.kubernetes.pod.namespace: monitoring
+      toPorts:
+        - ports:
+            - port: "8081"
               protocol: TCP
   egress:
     # DNS
