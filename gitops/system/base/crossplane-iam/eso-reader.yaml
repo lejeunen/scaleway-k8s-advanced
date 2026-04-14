@@ -22,13 +22,14 @@ spec:
   deletionPolicy: Orphan
   forProvider:
     name: eso-reader
-    description: "Secret Manager read-only access for ESO ClusterSecretStore"
+    description: "Secret Manager read-only + secret access for ESO ClusterSecretStore"
     organizationId: "${SCW_ORGANIZATION_ID}"
     applicationIdRef:
       name: eso-reader
     rule:
       - permissionSetNames:
           - SecretManagerReadOnly
+          - SecretManagerSecretAccess
         projectIds:
           - "${SCW_PROJECT_ID}"
     tags:
