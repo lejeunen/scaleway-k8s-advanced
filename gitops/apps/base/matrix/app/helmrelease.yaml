@@ -25,12 +25,11 @@ spec:
         kind: HelmRepository
         name: ess-helm
   install:
-    remediation:
-      retries: 3
+    strategy:
+      name: RetryOnFailure
   upgrade:
-    remediation:
-      retries: 1
-      remediateLastFailure: true
+    strategy:
+      name: RetryOnFailure
   values:
     serverName: sovereigncloudwisdom.eu
 
