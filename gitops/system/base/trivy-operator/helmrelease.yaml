@@ -58,6 +58,9 @@ spec:
       scanJobsConcurrentLimit: 1
       infraAssessmentScannerEnabled: false
       clusterComplianceEnabled: false
+      # SBOMReports were the largest etcd consumer (~25MB) on the 55MB mutualized
+      # control plane; vulnerability scanning is a separate flag and unaffected.
+      sbomGenerationEnabled: false
     excludeNamespaces: "kube-system,kube-node-lease,kube-public"
     trivy:
       ignoreUnfixed: true
