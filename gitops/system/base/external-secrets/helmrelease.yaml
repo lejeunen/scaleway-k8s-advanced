@@ -4,6 +4,7 @@ metadata:
   name: external-secrets
   namespace: external-secrets
 spec:
+  maxHistory: 2
   interval: 30m
   chart:
     spec:
@@ -20,5 +21,5 @@ spec:
   upgrade:
     crds: CreateReplace
     remediation:
-      retries: 3
+      retries: 1
       strategy: rollback

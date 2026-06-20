@@ -14,6 +14,7 @@ metadata:
   name: matrix-stack
   namespace: matrix
 spec:
+  maxHistory: 2
   interval: 10m
   timeout: 15m
   chart:
@@ -28,7 +29,7 @@ spec:
       retries: 3
   upgrade:
     remediation:
-      retries: 3
+      retries: 1
       remediateLastFailure: true
   values:
     serverName: sovereigncloudwisdom.eu

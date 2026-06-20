@@ -4,6 +4,7 @@ metadata:
   name: loki
   namespace: monitoring
 spec:
+  maxHistory: 2
   interval: 30m
   chart:
     spec:
@@ -20,7 +21,7 @@ spec:
   upgrade:
     crds: CreateReplace
     remediation:
-      retries: 3
+      retries: 1
       strategy: rollback
   values:
     deploymentMode: SingleBinary

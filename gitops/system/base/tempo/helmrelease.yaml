@@ -4,6 +4,7 @@ metadata:
   name: tempo
   namespace: monitoring
 spec:
+  maxHistory: 2
   interval: 30m
   chart:
     spec:
@@ -18,7 +19,7 @@ spec:
       retries: 3
   upgrade:
     remediation:
-      retries: 3
+      retries: 1
       strategy: rollback
   values:
     securityContext:
