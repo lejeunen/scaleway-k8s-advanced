@@ -1,0 +1,38 @@
+apiVersion: iam.scaleway.upbound.io/v1alpha1
+kind: Application
+metadata:
+  name: jeanne-genai
+spec:
+  deletionPolicy: Orphan
+  forProvider:
+    name: jeanne-genai
+    description: "Scoped credentials for Jeanne dev - Scaleway Generative APIs inference"
+    organizationId: "${SCW_ORGANIZATION_ID}"
+    tags:
+      - env=dev
+      - managed-by=crossplane
+  providerConfigRef:
+    name: default
+---
+apiVersion: iam.scaleway.upbound.io/v1alpha1
+kind: Policy
+metadata:
+  name: jeanne-genai
+spec:
+  deletionPolicy: Orphan
+  forProvider:
+    name: jeanne-genai
+    description: "Generative APIs model/deployment query access for Jeanne dev inference"
+    organizationId: "${SCW_ORGANIZATION_ID}"
+    applicationIdRef:
+      name: jeanne-genai
+    rule:
+      - permissionSetNames:
+          - GenerativeApisModelAccess
+        projectIds:
+          - "${SCW_PROJECT_ID}"
+    tags:
+      - env=dev
+      - managed-by=crossplane
+  providerConfigRef:
+    name: default

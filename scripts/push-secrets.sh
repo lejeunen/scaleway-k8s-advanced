@@ -157,6 +157,13 @@ push_all() {
       --arg ak "$JEANNE_SCW_ACCESS_KEY" --arg sk "$JEANNE_SCW_SECRET_KEY" \
       '{"SCW_ACCESS_KEY": $ak, "SCW_SECRET_KEY": $sk}')"
   fi
+
+  if should_push "jeanne-genai-credentials"; then
+    require_env JEANNE_GENAI_SECRET_KEY
+    push_secret "jeanne-genai-credentials" "$(jq -nc \
+      --arg sk "$JEANNE_GENAI_SECRET_KEY" \
+      '{"SCW_SECRET_KEY": $sk}')"
+  fi
 }
 
 push_all

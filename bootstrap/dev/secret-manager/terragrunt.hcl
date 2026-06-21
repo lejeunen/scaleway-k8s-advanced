@@ -50,5 +50,8 @@ inputs = {
     "jeanne-scaleway-credentials" = {
       description = "Scaleway read-only API credentials for Jeanne agent (scw CLI)"
     }
+    "jeanne-genai-credentials" = {
+      description = "Scaleway IAM secret key for Jeanne dev Generative APIs inference"
+    }
   }
 }

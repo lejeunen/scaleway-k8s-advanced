@@ -4,3 +4,4 @@ resources:
   - dns-manager.yaml
   - cnpg-backup.yaml
   - eso-reader.yaml
+  - jeanne-genai.yaml
