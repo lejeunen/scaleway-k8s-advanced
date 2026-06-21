@@ -5,4 +5,5 @@ resources:
   - ../base/matomo
   - ../base/matrix
   - ../base/jeanne
+  - ../base/jeanne-dev
   - ../base/dashy
