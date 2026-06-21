@@ -1,0 +1,13 @@
+apiVersion: registry.scaleway.upbound.io/v1alpha1
+kind: RegistryNamespace
+metadata:
+  name: jeanne-dev
+spec:
+  deletionPolicy: Orphan
+  forProvider:
+    name: jeanne-dev
+    description: "Jeanne dev images - thin/tooled agent image pulled by the jeanne-dev namespace"
+    region: ${SCW_REGION}
+    isPublic: false
+  providerConfigRef:
+    name: default

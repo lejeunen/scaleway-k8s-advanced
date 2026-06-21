@@ -5,3 +5,4 @@ resources:
   - cnpg-backup.yaml
   - eso-reader.yaml
   - jeanne-genai.yaml
+  - jeanne-registry.yaml

@@ -1,0 +1,84 @@
+# Push identity - write access for building/pushing Jeanne dev images from a laptop.
+# ContainerRegistryFullAccess is the only write-capable permission set (no push-only
+# set exists) and is project-scoped, so it also covers other registry namespaces in
+# the dev project.
+apiVersion: iam.scaleway.upbound.io/v1alpha1
+kind: Application
+metadata:
+  name: jeanne-registry-push
+spec:
+  deletionPolicy: Orphan
+  forProvider:
+    name: jeanne-registry-push
+    description: "Scoped credentials for pushing Jeanne dev images to Container Registry (laptop build/push)"
+    organizationId: "${SCW_ORGANIZATION_ID}"
+    tags:
+      - env=dev
+      - managed-by=crossplane
+  providerConfigRef:
+    name: default
+---
+apiVersion: iam.scaleway.upbound.io/v1alpha1
+kind: Policy
+metadata:
+  name: jeanne-registry-push
+spec:
+  deletionPolicy: Orphan
+  forProvider:
+    name: jeanne-registry-push
+    description: "Container Registry write access for pushing Jeanne dev images"
+    organizationId: "${SCW_ORGANIZATION_ID}"
+    applicationIdRef:
+      name: jeanne-registry-push
+    rule:
+      - permissionSetNames:
+          - ContainerRegistryFullAccess
+        projectIds:
+          - "${SCW_PROJECT_ID}"
+    tags:
+      - env=dev
+      - managed-by=crossplane
+  providerConfigRef:
+    name: default
+---
+# Pull identity - read-only access for the cluster to pull Jeanne dev images.
+# Materialized out-of-band as the docker-registry Secret jeanne-registry-pull in the
+# jeanne-dev namespace.
+apiVersion: iam.scaleway.upbound.io/v1alpha1
+kind: Application
+metadata:
+  name: jeanne-registry-pull
+spec:
+  deletionPolicy: Orphan
+  forProvider:
+    name: jeanne-registry-pull
+    description: "Scoped read-only credentials for the cluster to pull Jeanne dev images"
+    organizationId: "${SCW_ORGANIZATION_ID}"
+    tags:
+      - env=dev
+      - managed-by=crossplane
+  providerConfigRef:
+    name: default
+---
+apiVersion: iam.scaleway.upbound.io/v1alpha1
+kind: Policy
+metadata:
+  name: jeanne-registry-pull
+spec:
+  deletionPolicy: Orphan
+  forProvider:
+    name: jeanne-registry-pull
+    description: "Container Registry read-only access for pulling Jeanne dev images"
+    organizationId: "${SCW_ORGANIZATION_ID}"
+    applicationIdRef:
+      name: jeanne-registry-pull
+    rule:
+      - permissionSetNames:
+          - ContainerRegistryReadOnly
+        projectIds:
+          - "${SCW_PROJECT_ID}"
+    tags:
+      - env=dev
+      - managed-by=crossplane
+  providerConfigRef:
+    name: default
