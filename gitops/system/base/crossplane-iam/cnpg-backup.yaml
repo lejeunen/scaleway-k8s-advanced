@@ -30,6 +30,7 @@ spec:
       - permissionSetNames:
           - ObjectStorageObjectsRead
           - ObjectStorageObjectsWrite
+          - ObjectStorageObjectsDelete
           - ObjectStorageBucketsRead
         projectIds:
           - "${SCW_PROJECT_ID}"
