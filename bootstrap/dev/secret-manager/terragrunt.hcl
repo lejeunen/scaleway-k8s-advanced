@@ -53,5 +53,11 @@ inputs = {
     "jeanne-genai-credentials" = {
       description = "Scaleway IAM secret key for Jeanne dev Generative APIs inference"
     }
+    "jeanne-model" = {
+      description = "Scaleway secret key for Jeanne dev model (Devstral) inference"
+    }
+    "jeanne-gateway" = {
+      description = "OpenClaw gateway token for Jeanne dev agent"
+    }
   }
 }
