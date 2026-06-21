@@ -69,7 +69,9 @@ should_push() {
 # Each secret's JSON payload mirrors what was previously in terragrunt.hcl
 
 push_all() {
-  # IAM scoped API keys (created via: scw iam api-key create application-id=<id>)
+  # IAM scoped API keys are created via:
+  #   scw iam api-key create application-id=<id> expires-at="$(date -u -v+1y +%Y-%m-%dT%H:%M:%SZ)"
+  # The org security policy requires expires-at; the create call fails without it.
   # Application IDs: kubectl get applications.iam.scaleway.upbound.io -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.atProvider.id}{"\n"}{end}'
 
   if should_push "scaleway-dns-credentials"; then
