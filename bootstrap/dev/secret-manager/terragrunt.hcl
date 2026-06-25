@@ -59,5 +59,8 @@ inputs = {
     "jeanne-gateway" = {
       description = "OpenClaw gateway token for Jeanne dev agent"
     }
+    "jeanne-msteams" = {
+      description = "Entra app client secret for Jeanne dev Teams bot (tenant nlesrl, jeanne-bot); ESO syncs to jeanne-dev as MSTEAMS_APP_PASSWORD"
+    }
   }
 }
