@@ -4,6 +4,5 @@ resources:
   - ../base/sovereign-cloud-wisdom
   - ../base/matomo
   - ../base/matrix
-  - ../base/jeanne
   - ../base/jeanne-dev
   - ../base/dashy
