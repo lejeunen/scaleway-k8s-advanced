@@ -38,9 +38,6 @@ inputs = {
     "wisdom-registry-credentials" = {
       description = "Docker config JSON for pulling sovereign-cloud-wisdom images"
     }
-    "mistral-api-credentials" = {
-      description = "Mistral API key for OpenClaw agent Jeanne"
-    }
     "jeanne-matrix-credentials" = {
       description = "Matrix credentials for OpenClaw agent Jeanne"
     }
@@ -61,6 +58,9 @@ inputs = {
     }
     "jeanne-msteams" = {
       description = "Entra app client secret for Jeanne dev Teams bot (tenant nlesrl, jeanne-bot); ESO syncs to jeanne-dev as MSTEAMS_APP_PASSWORD"
+    }
+    "jeanne-memory-luks" = {
+      description = "LUKS passphrase for Jeanne dev encrypted memory volume; ESO syncs to jeanne-dev as encryptionPassphrase. NB unrotatable - rotating orphans the volume and all its snapshots."
     }
   }
 }
