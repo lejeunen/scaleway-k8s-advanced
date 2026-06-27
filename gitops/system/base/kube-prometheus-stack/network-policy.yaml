@@ -191,15 +191,6 @@ spec:
         - ports:
             - port: "8080"
               protocol: TCP
-    # Scrape OpenClaw Operator metrics (openclaw namespace)
-    - toEndpoints:
-        - matchLabels:
-            app.kubernetes.io/name: openclaw-operator
-            k8s:io.kubernetes.pod.namespace: openclaw
-      toPorts:
-        - ports:
-            - port: "8443"
-              protocol: TCP
     # Scrape Matrix metrics (matrix namespace)
     - toEndpoints:
         - matchLabels:
