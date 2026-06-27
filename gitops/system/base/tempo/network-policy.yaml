@@ -16,19 +16,21 @@ spec:
         - ports:
             - port: "4317"
               protocol: TCP
-    # Jeanne OTLP traces (diagnostics-otel plugin)
-    - fromEndpoints:
-        - matchLabels:
-            app.kubernetes.io/instance: jeanne
-            k8s:io.kubernetes.pod.namespace: jeanne
-      toPorts:
-        - ports:
-            - port: "4318"
-              protocol: TCP
     # Grafana queries traces
     - fromEndpoints:
         - matchLabels:
             app.kubernetes.io/name: grafana
+      toPorts:
+        - ports:
+            - port: "3200"
+              protocol: TCP
+    # Jeanne queries traces (Phase 10 query-tempo skill) - the "customer admits Jeanne"
+    # pattern. Scoped to the jeanne-dev product namespace. Query API is 3200 (her own
+    # audit also lands here via service.name "jeanne", pushed through Alloy).
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: jeanne
+            k8s:io.kubernetes.pod.namespace: jeanne-dev
       toPorts:
         - ports:
             - port: "3200"

@@ -103,6 +103,16 @@ spec:
         - ports:
             - port: "9090"
               protocol: TCP
+    # Jeanne queries metrics (Phase 10 query-prometheus skill) - the "customer admits
+    # Jeanne" pattern. Scoped to the jeanne-dev product namespace.
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: jeanne
+            k8s:io.kubernetes.pod.namespace: jeanne-dev
+      toPorts:
+        - ports:
+            - port: "9090"
+              protocol: TCP
     # Envoy Gateway proxy (public HTTPRoute)
     - fromEndpoints:
         - matchLabels:

@@ -24,6 +24,17 @@ spec:
         - ports:
             - port: "3100"
               protocol: TCP
+    # Jeanne queries logs (Phase 10 query-loki skill) - the "customer admits Jeanne"
+    # pattern: a deployment that enables the Loki integration opens its Loki ingress to
+    # Jeanne's pod. Scoped to the jeanne-dev product namespace.
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: jeanne
+            k8s:io.kubernetes.pod.namespace: jeanne-dev
+      toPorts:
+        - ports:
+            - port: "3100"
+              protocol: TCP
     # Loki memberlist (inter-pod, for future scaling)
     - fromEndpoints:
         - matchLabels:
