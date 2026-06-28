@@ -4,6 +4,7 @@ kind: Kustomization
 # chart/persona/skills stay private; only this thin consumer is public (IP boundary, S8).
 resources:
   - externalsecret-registry.yaml
-  # - helmrepository.yaml      # Phase 13 Step 2 (OCI source for the released chart)
-  # - helmrelease.yaml         # Phase 13 Step 2
-  # - configmap-overlay.yaml   # Phase 13 Step 3 (showcase AGENTS overlay)
+  - helmrepository.yaml
+  - helmrelease.yaml
+  # configmap-overlay.yaml: the showcase dogfoods the BASE persona (no customer overlay),
+  # like the dev harness; the customer-overlay seam is exercised separately.

@@ -1,0 +1,143 @@
+# The showcase dogfood: Jeanne from the released 0.1.0 OCI chart, consumed exactly as a
+# customer would (Phase 13). Flux owns the release in jeanne-dev (laptop direct-helm is
+# retired - suspend this HelmRelease to hand it back for emergency work).
+#
+# The base chart pins the image by digest (jeanne/jeanne@sha256:1ed4495f); these values
+# are the SHOWCASE's consumer overlay - the union of the dev overlays (eso + identity +
+# teams + base) translated here, with the image NOT overridden (only the pull secret) so
+# the dogfood runs the released digest, not the rolling :dev. Full feature set: ESO,
+# egress jail, identity (PR path + read-only scw), observability, and Teams + edge.
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: jeanne
+  namespace: jeanne-dev
+spec:
+  interval: 10m
+  timeout: 15m
+  maxHistory: 2
+  chart:
+    spec:
+      chart: jeanne
+      version: "0.1.0"
+      sourceRef:
+        kind: HelmRepository
+        name: jeanne-release
+  values:
+    fullnameOverride: jeanne
+
+    # Released image (digest-pinned in the chart); only the pull secret is customer wiring.
+    image:
+      pullSecretName: jeanne-showcase-registry-pull
+
+    # Scaleway Generative APIs, scoped to the showcase project.
+    model:
+      baseUrl: https://api.scaleway.ai/25485e2e-7a3a-40ae-8d0c-1496ef7c5e0f/v1
+      id: "mistral-medium-3.5-128b"
+
+    gateway:
+      bind: loopback
+      controlUi:
+        disableDeviceAuth: true   # break-glass Control UI via port-forward during the soak
+      auth:
+        mode: token
+
+    # Secrets from the showcase Secret Manager via ESO (model/gateway by the default
+    # convention; github/scaleway need remoteRef overrides for the operator-era layout).
+    externalSecrets:
+      enabled: true
+      refreshInterval: "1h"
+      secretStoreRef:
+        name: scaleway-secret-store
+        kind: ClusterSecretStore
+      remoteRefs:
+        github:
+          key: "name:openclaw-github-app"
+          properties:
+            GITHUB_APP_ID: APP_ID
+            GITHUB_APP_INSTALLATION_ID: INSTALLATION_ID
+            GITHUB_APP_PRIVATE_KEY: PRIVATE_KEY
+        scaleway:
+          key: "name:jeanne-scaleway-credentials"
+
+    # Teams channel on the owned M365 test tenant + the chart-owned public edge.
+    channels:
+      msteams:
+        enabled: true
+        tenantId: "1e7eac70-1daa-4c04-828a-bc43d29b17af"
+        appId: "f3a1c2b9-019e-40e8-aeec-e9c17829bfb0"
+      matrix:
+        enabled: false
+    edge:
+      enabled: true
+      mode: create
+      hostname: "jeanne.bot.scw.sovereigncloudwisdom.eu"
+      certIssuer: letsencrypt-prod
+      proxyEgressPolicy: true
+
+    egress:
+      enabled: true
+
+    # LUKS-encrypted memory volume (passphrase via ESO from jeanne-memory-luks).
+    memory:
+      persistence:
+        encryption:
+          enabled: true
+
+    backup:
+      enabled: true
+      schedule: "0 3 * * *"
+      snapshotClassName: scw-snapshot-retain
+      retention:
+        count: 7
+
+    identity:
+      github:
+        enabled: true
+        repoCache:
+          size: 2Gi
+      scaleway:
+        enabled: true
+        defaults:
+          region: fr-par
+          zone: fr-par-1
+          organizationId: b7b9a9bd-321d-4146-a793-ccb3d420d4c8
+          projectId: 25485e2e-7a3a-40ae-8d0c-1496ef7c5e0f
+      cluster:
+        createClusterRole: true
+        crossplaneAggregateView: true
+        extraRules:
+          - apiGroups:
+              - apiextensions.crossplane.io
+              - pkg.crossplane.io
+              - ops.crossplane.io
+              - protection.crossplane.io
+            resources: ["*"]
+            verbs: ["get", "list", "watch"]
+          - apiGroups:
+              - external-secrets.io
+              - kustomize.toolkit.fluxcd.io
+              - helm.toolkit.fluxcd.io
+            resources: ["*"]
+            verbs: ["get", "list", "watch"]
+
+    observability:
+      audit:
+        stdout: true
+        otel:
+          enabled: true
+          endpoint: http://alloy.monitoring.svc.cluster.local:4318
+          captureContent:
+            toolInputs: true
+      integrations:
+        loki:
+          enabled: true
+          endpoint: http://loki.monitoring.svc.cluster.local:3100
+        prometheus:
+          enabled: true
+          endpoint: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
+        tempo:
+          enabled: true
+          endpoint: http://tempo.monitoring.svc.cluster.local:3200
+      dashboard:
+        enabled: true

@@ -1,0 +1,16 @@
+# OCI source for the released Jeanne chart, pulled from the private jeanne-release CR
+# project with the showcase's read-only entitlement (Phase 13). The base chart/persona/
+# skills stay private; Flux pulls the chart as a private OCI artifact (IP boundary, S8).
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: jeanne-release
+  namespace: jeanne-dev
+spec:
+  type: oci
+  url: oci://rg.fr-par.scw.cloud/jeanne/charts
+  interval: 1h
+  # dockerconfigjson Secret materialized by ESO from the jeanne-showcase-registry-pull
+  # read-only IAM key (ContainerRegistryReadOnly on jeanne-release).
+  secretRef:
+    name: jeanne-showcase-registry-pull
