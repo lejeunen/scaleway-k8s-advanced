@@ -131,6 +131,14 @@ spec:
         - ports:
             - port: "9090"
               protocol: TCP
+    # Alloy remote-writes OTLP-derived metrics here (Jeanne's openclaw.* token/cost)
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: alloy
+      toPorts:
+        - ports:
+            - port: "9090"
+              protocol: TCP
   egress:
     # DNS
     - toEndpoints:

@@ -61,6 +61,14 @@ spec:
         - ports:
             - port: "4317"
               protocol: TCP
+    # Remote-write OTLP-derived metrics to Prometheus (Jeanne's openclaw.* token/cost)
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: prometheus
+      toPorts:
+        - ports:
+            - port: "9090"
+              protocol: TCP
     # K8s API server (pod discovery for log collection)
     - toEntities:
         - kube-apiserver
