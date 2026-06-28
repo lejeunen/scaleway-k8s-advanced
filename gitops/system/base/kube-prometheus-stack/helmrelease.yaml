@@ -57,6 +57,11 @@ spec:
 
     # Grafana — dashboards from ConfigMaps, no persistence needed
     grafana:
+      # Watch jeanne-dev too, so Jeanne's chart-shipped dashboard ConfigMap (in its own
+      # namespace) is auto-discovered - without ALL-namespace scope (least-privilege).
+      sidecar:
+        dashboards:
+          searchNamespace: "monitoring,jeanne-dev"
       admin:
         existingSecret: grafana-admin-credentials
         passwordKey: admin-password
