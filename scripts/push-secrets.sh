@@ -131,6 +131,19 @@ push_all() {
       '{"auths": {"rg.fr-par.scw.cloud": {"username": "nologin", "password": $sk}}}')"
   fi
 
+  # Read-only entitlement to pull released Jeanne artifacts from the jeanne-release CR
+  # project (Phase 13). The password is the SECRET KEY of an api-key created from the
+  # jeanne-release-registry-pull IAM application (ContainerRegistryReadOnly, project
+  # jeanne-release) - NOT the full SCW_SECRET_KEY. Create the api-key with
+  # `scw iam api-key create application-id=<jeanne-release-registry-pull app id>` and
+  # export it before running.
+  if should_push "jeanne-release-registry-credentials"; then
+    require_env JEANNE_RELEASE_REGISTRY_PULL_KEY
+    push_secret "jeanne-release-registry-credentials" "$(jq -nc \
+      --arg sk "$JEANNE_RELEASE_REGISTRY_PULL_KEY" \
+      '{"auths": {"rg.fr-par.scw.cloud": {"username": "nologin", "password": $sk}}}')"
+  fi
+
   if should_push "mistral-api-credentials"; then
     require_env MISTRAL_API_KEY
     push_secret "mistral-api-credentials" "$(jq -nc \

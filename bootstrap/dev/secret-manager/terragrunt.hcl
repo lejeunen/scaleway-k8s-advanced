@@ -38,6 +38,9 @@ inputs = {
     "wisdom-registry-credentials" = {
       description = "Docker config JSON for pulling sovereign-cloud-wisdom images"
     }
+    "jeanne-release-registry-credentials" = {
+      description = "Docker config JSON for the showcase to pull released Jeanne artifacts from the jeanne-release CR project (read-only entitlement; password = the jeanne-release-registry-pull api-key secret)"
+    }
     "jeanne-matrix-credentials" = {
       description = "Matrix credentials for OpenClaw agent Jeanne"
     }
