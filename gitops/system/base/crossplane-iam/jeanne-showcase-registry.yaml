@@ -1,0 +1,54 @@
+# Per-consumer read-only pull identity: the SHOWCASE's entitlement to pull the released
+# Jeanne artifacts (image + OCI chart) from the dedicated jeanne-release CR project
+# (Phase 12/13).
+#
+# Naming is per-consumer on purpose (Charter S8): each customer gets its OWN pull
+# Application + key - jeanne-showcase-registry-pull here, jeanne-monizze-registry-pull,
+# jeanne-customerN-registry-pull next - so a key can be revoked/audited per customer.
+# They all carry ContainerRegistryReadOnly on the SAME jeanne-release project: per-project
+# IAM (Charter Q4) is the isolation from dev/wisdom; the per-customer KEY is the gate, not
+# a per-customer project (everyone pulls identical artifacts).
+#
+# Materialized as the docker-registry Secret jeanne-showcase-registry-pull in jeanne-dev
+# (ESO), used BOTH as the Flux HelmRepository auth (chart) and the pod imagePullSecret
+# (image). No push identity: the release is pushed from the laptop (nicolas-account); the
+# showcase, like any customer, only pulls.
+apiVersion: iam.scaleway.upbound.io/v1alpha1
+kind: Application
+metadata:
+  name: jeanne-showcase-registry-pull
+spec:
+  deletionPolicy: Orphan
+  forProvider:
+    name: jeanne-showcase-registry-pull
+    description: "Read-only credentials for the SHOWCASE to pull released Jeanne artifacts from the jeanne-release CR project"
+    organizationId: "${SCW_ORGANIZATION_ID}"
+    tags:
+      - env=dev
+      - managed-by=crossplane
+  providerConfigRef:
+    name: default
+---
+apiVersion: iam.scaleway.upbound.io/v1alpha1
+kind: Policy
+metadata:
+  name: jeanne-showcase-registry-pull
+spec:
+  deletionPolicy: Orphan
+  forProvider:
+    name: jeanne-showcase-registry-pull
+    description: "Container Registry read-only access to the jeanne-release project for the showcase (released chart + image)"
+    organizationId: "${SCW_ORGANIZATION_ID}"
+    applicationIdRef:
+      name: jeanne-showcase-registry-pull
+    rule:
+      - permissionSetNames:
+          - ContainerRegistryReadOnly
+        projectIds:
+          # jeanne-release (NOT ${SCW_PROJECT_ID} - IAM is per-project, Charter Q4)
+          - "e019b6fb-0a41-4818-af40-0444c1db8156"
+    tags:
+      - env=dev
+      - managed-by=crossplane
+  providerConfigRef:
+    name: default

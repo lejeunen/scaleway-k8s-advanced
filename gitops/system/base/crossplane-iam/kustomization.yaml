@@ -6,4 +6,4 @@ resources:
   - eso-reader.yaml
   - jeanne-genai.yaml
   - jeanne-registry.yaml
-  - jeanne-release-registry.yaml
+  - jeanne-showcase-registry.yaml
