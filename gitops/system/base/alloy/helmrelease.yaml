@@ -134,7 +134,8 @@ spec:
             }
 
             output {
-              traces = [otelcol.processor.tail_sampling.default.input]
+              traces  = [otelcol.processor.tail_sampling.default.input]
+              metrics = [otelcol.exporter.prometheus.default.input]
             }
           }
 
@@ -177,5 +178,20 @@ spec:
               tls {
                 insecure = true
               }
+            }
+          }
+
+          // ---- Metrics ----
+
+          // Convert received OTLP metrics to Prometheus form and remote-write them to
+          // kube-prometheus-stack. This surfaces Jeanne's diagnostics-otel openclaw.*
+          // token/cost metrics (and run/skill/tool/session metrics) in Prometheus.
+          otelcol.exporter.prometheus "default" {
+            forward_to = [prometheus.remote_write.default.receiver]
+          }
+
+          prometheus.remote_write "default" {
+            endpoint {
+              url = "http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090/api/v1/write"
             }
           }

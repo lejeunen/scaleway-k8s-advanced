@@ -38,6 +38,9 @@ spec:
     prometheus:
       prometheusSpec:
         retention: 7d
+        # Accept Prometheus remote-write: Alloy ships OTLP-derived metrics here,
+        # including Jeanne's openclaw.* token/cost metrics (diagnostics-otel plugin).
+        enableRemoteWriteReceiver: true
         serviceMonitorSelectorNilUsesHelmValues: false
         podMonitorSelectorNilUsesHelmValues: false
         ruleSelectorNilUsesHelmValues: false
