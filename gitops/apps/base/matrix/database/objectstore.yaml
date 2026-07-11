@@ -16,4 +16,5 @@ spec:
         key: ACCESS_SECRET_KEY
     wal:
       compression: gzip
-  retentionPolicy: "3d"
+  # Unused showcase: 1-day PITR window is enough. Was "3d".
+  retentionPolicy: "1d"

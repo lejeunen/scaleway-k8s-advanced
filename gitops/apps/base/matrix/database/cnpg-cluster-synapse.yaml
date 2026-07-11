@@ -18,6 +18,10 @@ spec:
     parameters:
       shared_buffers: "64MB"
       effective_cache_size: "128MB"
+      # Unused showcase: Synapse background loops write continuously, so the CNPG
+      # default archive_timeout=5min forced a WAL switch every 5 min (~288
+      # segments/day). Relaxed to 1h -> ~24/day. RPO worsens 5min -> 1h (fine here).
+      archive_timeout: "1h"
 
   storage:
     size: 10Gi

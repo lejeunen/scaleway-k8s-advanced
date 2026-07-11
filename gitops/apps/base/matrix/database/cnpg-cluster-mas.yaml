@@ -18,6 +18,10 @@ spec:
     parameters:
       shared_buffers: "32MB"
       effective_cache_size: "64MB"
+      # Unused showcase: MAS' job-queue heartbeat writes ~1 row/s, so the CNPG
+      # default archive_timeout=5min forced a WAL switch every 5 min (~288
+      # segments/day). Relaxed to 1h -> ~24/day. RPO worsens 5min -> 1h (fine here).
+      archive_timeout: "1h"
 
   storage:
     size: 10Gi
