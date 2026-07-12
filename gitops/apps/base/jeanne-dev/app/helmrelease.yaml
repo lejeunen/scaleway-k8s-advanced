@@ -19,7 +19,7 @@ spec:
   chart:
     spec:
       chart: jeanne
-      version: "0.1.0"
+      version: "0.2.0"
       sourceRef:
         kind: HelmRepository
         name: jeanne-release
@@ -30,10 +30,9 @@ spec:
     image:
       pullSecretName: jeanne-showcase-registry-pull
 
-    # Scaleway Generative APIs, scoped to the showcase project.
+    # Scaleway Generative APIs, scoped to the showcase project. id/name inherit the chart default.
     model:
       baseUrl: https://api.scaleway.ai/25485e2e-7a3a-40ae-8d0c-1496ef7c5e0f/v1
-      id: "mistral-medium-3.5-128b"
 
     gateway:
       bind: loopback
