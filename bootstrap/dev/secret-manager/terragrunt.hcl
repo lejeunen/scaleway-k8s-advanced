@@ -62,6 +62,9 @@ inputs = {
     "jeanne-msteams" = {
       description = "Entra app client secret for Jeanne dev Teams bot (tenant nlesrl, jeanne-bot); ESO syncs to jeanne-dev as MSTEAMS_APP_PASSWORD"
     }
+    "jeanne-websearch" = {
+      description = "Brave Search API key for Jeanne dev web_search (ADR 0004; non-sovereign, opt-in). ESO syncs to jeanne-dev as BRAVE_API_KEY; payload JSON {\"BRAVE_API_KEY\": ...}."
+    }
     "jeanne-memory-luks" = {
       description = "LUKS passphrase for Jeanne dev encrypted memory volume; ESO syncs to jeanne-dev as encryptionPassphrase. NB unrotatable - rotating orphans the volume and all its snapshots."
     }

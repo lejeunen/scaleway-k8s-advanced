@@ -77,6 +77,51 @@ spec:
     egress:
       enabled: true
 
+    # Web tools left ON in the showcase (ADR 0004).
+    # web_search (Brave, non-sovereign): key from Secret Manager (name:jeanne-websearch,
+    # property BRAVE_API_KEY) via ESO -> env. Provider brave is the chart default.
+    webSearch:
+      enabled: true
+    # web_fetch (sovereign deep-read): the egress jail is the boundary (the tool has no
+    # native allowlist). Each domain is listed as apex + "*." because Cilium matchPattern
+    # "*" is one label and matches neither the apex nor multi-level subdomains - so both
+    # are needed to make the WHOLE domain fetchable (root, www, docs, blog). search
+    # discovers broadly; fetch deep-reads these vetted stacks. Grow as investigations need.
+    webFetch:
+      enabled: true
+      domains:
+        - "openclaw.ai"
+        - "*.openclaw.ai"
+        - "scaleway.com"
+        - "*.scaleway.com"
+        - "kubernetes.io"
+        - "*.kubernetes.io"
+        - "sigs.k8s.io"
+        - "*.sigs.k8s.io"
+        - "cilium.io"
+        - "*.cilium.io"
+        - "fluxcd.io"
+        - "*.fluxcd.io"
+        - "crossplane.io"
+        - "*.crossplane.io"
+        - "cloudnative-pg.io"
+        - "*.cloudnative-pg.io"
+        - "external-secrets.io"
+        - "*.external-secrets.io"
+        - "cert-manager.io"
+        - "*.cert-manager.io"
+        - "helm.sh"
+        - "*.helm.sh"
+        - "prometheus.io"
+        - "*.prometheus.io"
+        - "grafana.com"
+        - "*.grafana.com"
+        - "opentelemetry.io"
+        - "*.opentelemetry.io"
+        - "developer.hashicorp.com"
+        - "registry.terraform.io"
+        - "terragrunt.gruntwork.io"
+
     # LUKS-encrypted memory volume (passphrase via ESO from jeanne-memory-luks).
     memory:
       persistence:
